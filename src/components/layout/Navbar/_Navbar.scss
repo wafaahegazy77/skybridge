@@ -1,34 +1,294 @@
-.navbar {
-    padding: 1.5rem 1rem ;
-    z-index: 99;
-    
-    &.homeNav {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
+// -------------------------------------------
+//  Navbar (Figma: Home → Menu, desktop 1512px)
+// -------------------------------------------
 
+.site-header {
+    position: absolute;
+    top: 20px; // Figma: Menu y = 20
+    left: 0;
+    right: 0;
+    z-index: 99;
+}
+
+.site-navbar {
+    // Reset Bootstrap's navbar spacing; all spacing comes from Figma below.
+    --bs-navbar-padding-x: 0;
+    --bs-navbar-padding-y: 0;
+    padding: 0;
+
+    &__bar {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 1213px; // Figma: 1213 × 90
+        height: 90px;
+        margin-inline: auto;
+        // Figma places the bar at x = 153 on the 1512 frame (153px left / 146px right),
+        // i.e. 3.5px right of center. Kept as in the design.
+        left: 3.5px;
+        padding-left: 30px; // Figma: logo x = 30
+        border-radius: 70px;
+        background-color: rgba(255, 255, 255, 0.02);
+        // Figma background blur 25 ≈ CSS blur(12.5px)
+        -webkit-backdrop-filter: blur(12.5px);
+        backdrop-filter: blur(12.5px);
     }
-    .logo {
-        height: 35px;
+
+    &__brand {
+        flex-shrink: 0;
+        align-self: flex-start;
+        margin: 15px 0 0; // Figma: logo y = 15
+        padding: 0;
+        line-height: 0;
+    }
+
+    &__logo {
+        display: block;
+        width: 72px;
+        height: 51px;
         object-fit: contain;
     }
 
-    .nav-link {
-        color: #161B26;
-        margin: 0 15px ;
-        font-weight: 500;
+    &__collapse {
+        align-self: stretch;
+        align-items: center;
+    }
+
+    // Links start at x = 311 inside the bar: 311 - 30 (padding) - 72 (logo) = 209.
+    // Nested selector so it wins over the global `body ul:not(.list-styled) { margin: 0 }`.
+    & &__menu {
+        align-items: center;
+        gap: 60px; // Figma: auto layout gap 60
+        margin: 0 0 0 209px;
+    }
+
+    &__link {
+        position: relative;
+        display: inline-block;
+        padding: 0;
+        font-family: var(--font-nav);
+        font-size: 20px;
+        font-weight: 400;
+        line-height: normal; // Figma: Manrope "Auto" line height (27px box)
+        letter-spacing: 0;
+        color: #fff;
+        transition: color 0.3s ease;
+
+        // Hover: thin primary line that grows from the center.
+        &::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -4px;
+            height: 1px;
+            background-color: var(--primary);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+
         &:hover {
-            color: var(--blue);
+            color: var(--primary);
+
+            &::after {
+                transform: scaleX(1);
+            }
+        }
+
+        &--active {
+            color: var(--primary);
+
+            &::before {
+                transform: translateX(-50%) scale(1);
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 6px;
+            border-radius: 4px;
         }
     }
 
-    .language_switcher {
-        background-color: transparent;
-        border: none;
-        i {
-            margin-inline-end: 5px;
+    // Figma: visible glass pill is 150 × 46 at x = 1036 (27px from the bar's right edge).
+    // Content starts 24px from the left (23px padding + 1px border) and is left-aligned:
+    // 24 + 85 (text) + 10 (gap) + 14 (icon) = 133 → 17px of space remains on the right.
+    // Nested selector so it wins over the base `.butn` (width: fit-content; justify-content: center).
+    & &__cta {
+        flex-shrink: 0;
+        // width: 150px;
+        justify-content: flex-start;
+        margin: 0 27px 0 auto;
+    }
+
+    &__brand:focus-visible,
+    &__cta:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 4px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-navbar__link,
+    .site-navbar__link::before,
+    .site-navbar__link::after {
+        transition: none;
+    }
+}
+// Custom menu toggle (two lines → X), replaces Bootstrap's icon. Hidden on desktop by Bootstrap.
+.site-navbar__toggler {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    margin-left: auto;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.04);
+    box-shadow: none;
+    transition: border-color 0.25s ease, background-color 0.25s ease;
+
+    &:hover {
+        border-color: var(--primary);
+    }
+
+    &:focus {
+        box-shadow: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 3px;
+    }
+
+    &-line {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 18px;
+        height: 1.5px;
+        margin-left: -9px;
+        border-radius: 2px;
+        background-color: #fff;
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+
+        &:first-child {
+            transform: translateY(-4px);
+        }
+
+        &:last-child {
+            transform: translateY(4px);
         }
     }
 
+    &[aria-expanded="true"] .site-navbar__toggler-line {
+        &:first-child {
+            transform: rotate(45deg);
+        }
+
+        &:last-child {
+            transform: rotate(-45deg);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &-line {
+            transition: none;
+        }
+    }
+}
+
+// ===========================================
+//  Responsive (desktop ≥ 1400px is untouched)
+// ===========================================
+
+// Laptop: the bar fills the Bootstrap container (the 3.5px Figma offset only applies on the 1512 frame).
+@media (max-width: 1399.98px) {
+    .site-navbar__bar {
+        left: 0;
+    }
+}
+
+// Small laptop: links are centered between logo and CTA with tighter spacing so everything fits.
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .site-navbar .site-navbar__menu {
+        gap: 36px;
+        margin: 0 auto;
+    }
+
+    .site-navbar__link {
+        font-size: 18px;
+    }
+
+    .site-navbar .site-navbar__cta {
+        margin: 0 20px 0 0;
+    }
+}
+
+// Tablet & mobile: compact glass bar with a menu toggle; the bar expands into a glass panel.
+@media (max-width: 991.98px) {
+    .site-header {
+        top: 12px;
+    }
+
+    .site-navbar__bar {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 64px;
+        padding: 8px 8px 8px 20px;
+        border-radius: 32px;
+        transition: background-color 0.3s ease;
+
+        // While the menu is open the panel turns nearly opaque (page background #1A1F1F),
+        // so the links stay readable over the Hero headline and buttons behind it.
+        &:has(.site-navbar__collapse.show, .site-navbar__collapse.collapsing) {
+            background-color: rgba(26, 31, 31, 0.92);
+        }
+    }
+
+    .site-navbar__brand {
+        align-self: center;
+        margin: 0;
+    }
+
+    .site-navbar__logo {
+        width: 54px;
+        height: 38px;
+    }
+
+    .site-navbar__collapse {
+        align-self: auto;
+    }
+
+    // Panel content (inside Bootstrap's collapse, which animates its height).
+    .site-navbar .site-navbar__menu {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        margin: 12px 12px 0 0;
+    }
+
+    .site-navbar__item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .site-navbar__link {
+        display: block;
+        padding: 14px 0;
+
+        // Desktop underline/dot indicators are replaced by color only in the stacked list.
+        &::before,
+        &::after {
+            display: none;
+        }
+    }
+
+    .site-navbar .site-navbar__cta {
+        width: calc(100% - 12px); // same 20px inset on both sides of the panel as the links
+        justify-content: center;
+        margin: 20px 12px 12px 0;
+    }
 }

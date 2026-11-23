@@ -1,14 +1,13 @@
 /* --------------- variable --------------- */
 :root{
-    --primary : #000;
-    --secondary: #333;
-    --filterPrimary : invert(0%) sepia(100%) saturate(19%) hue-rotate(19deg) brightness(101%) contrast(106%);
-    --filterSecondary : invert(0%) sepia(100%) saturate(19%) hue-rotate(19deg) brightness(101%) contrast(106%);
+    --primary : #2DD975;
+    --filterPrimary : invert(65%) sepia(22%) saturate(1355%) hue-rotate(92deg) brightness(103%) contrast(90%);
     --filterWhite : invert(99%) sepia(0%) saturate(4787%) hue-rotate(41deg) brightness(127%) contrast(96%);
 
     // Font families (loaded with next/font in src/lib/fonts.ts)
     --font-heading: var(--font-bagoss), sans-serif;
     --font-body: var(--font-poppins), sans-serif;
+    --font-nav: var(--font-manrope), sans-serif;
 }
 
 *{
@@ -36,7 +35,8 @@
 body {
     font-family: var(--font-body);
     overflow-x: hidden;
-    color: #161B26;
+    color: #fff;
+    background: #1A1F1F;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -80,19 +80,7 @@ nav::-webkit-scrollbar {
     filter: var(--filterPrimary);
 }
 
-/* Color Secondary  */
-.color_secondary{
-    color: var(--secondary) !important;
-}
-.bg_secondary {
-    background-color: var(--secondary) !important;
-}
-.border_secondary {
-    border-color: var(--secondary) !important;
-}
-.filter_secondary {
-    filter: var(--filterSecondary);
-}
+
 
 
 

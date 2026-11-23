@@ -9,8 +9,3 @@ export const apiClient = axios.create({
         ...(apiConfig.secret ? { "X-Api-Secret": apiConfig.secret } : {}),
     },
 });
-
-/** Headers that tell the backend which language to return. */
-export function localeHeaders(locale: string) {
-    return { lang: locale };
-}

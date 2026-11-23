@@ -1,6 +1,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+// Single place where GSAP plugins are registered (client only).
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
@@ -34,4 +35,4 @@ export const fadeUpAll = (selector: string) => {
   });
 };
 
-export { gsap, ScrollTrigger };
+export { gsap, ScrollTrigger };

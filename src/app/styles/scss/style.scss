@@ -41,17 +41,6 @@
         background-color: transparent;
     }
 
-    &.secondary_butn {
-        background-color: var(--secondary);
-        color: #fff;
-    }
-
-    &.secondary_border_butn {
-        border: 1px solid var(--secondary);
-        color: var(--secondary);
-        background-color: transparent;
-    }
-
     &.white_butn {
         background-color: #fff;
         color: #333;
@@ -60,6 +49,125 @@
     &.white_border_butn {
         background-color: #fff;
         border: 1px solid #D6D3D3;
+    }
+
+    // -------------------------------------------------------------
+    // Rounded button (Figma: "Button Rounded" / Medium, icon right).
+    // Shared size + interaction layer; colors come from the variants below.
+    // Base `.butn`, `hvr-txt-trans` and `hvr-scale` stay untouched.
+    // -------------------------------------------------------------
+    &.rounded_butn {
+        height: 46px;
+        // Figma: 24px padding with the stroke drawn inside → 23px + 1px border
+        padding: 0 23px;
+        gap: 10px;
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1;
+
+        // Figma label is Poppins Regular, vertically centered.
+        // Higher specificity than `.butn.hvr-txt-trans .txt span` so it wins.
+        &.hvr-txt-trans .txt span,
+        &.hvr-txt-trans .txt::after {
+            font-weight: 400;
+            padding-bottom: 0;
+        }
+
+        .butn__icon {
+            flex-shrink: 0;
+            transition: transform 0.25s ease;
+        }
+
+        // Hover: the fill turns transparent instantly (no background transition); the border
+        // stays in the button's own color and glows softly. Only these properties animate,
+        // so nothing conflicts with GSAP (opacity is never transitioned).
+        &.hvr-scale {
+            transition:
+                transform 0.3s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                color 0.25s ease;
+        }
+
+        &:hover {
+            background-color: transparent;
+
+            .butn__icon {
+                transform: translate(2px, -2px);
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 4px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .butn__icon {
+                transition: none;
+            }
+
+            &:hover .butn__icon {
+                transform: none;
+            }
+        }
+
+        // Glass (Navbar CTA): white 10% fill, 1px white border, background blur 15.
+        &.glass_butn {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: #fff;
+            // Figma background blur 15 ≈ CSS blur(7.5px)
+            -webkit-backdrop-filter: blur(7.5px);
+            backdrop-filter: blur(7.5px);
+
+            &:hover {
+                background-color: transparent;
+                border-color: #fff;
+                color: #fff !important;
+                box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+            }
+
+            &.hvr-txt-trans:hover .txt::after {
+                color: #fff;
+            }
+        }
+
+        // Primary (Hero "About Us"): green fill, black label and icon.
+        // Hover: transparent with a glowing green border. The label takes the button's green,
+        // because its default black would be invisible on the dark Hero once the fill is gone.
+        &.primary_butn {
+            color: #000;
+
+            &:hover {
+                background-color: transparent;
+                border-color: var(--primary);
+                color: var(--primary) !important;
+                box-shadow: 0 0 14px rgba(45, 217, 117, 0.45);
+            }
+
+            &.hvr-txt-trans:hover .txt::after {
+                color: var(--primary);
+            }
+        }
+
+        // White (Hero "Learn More"): white fill, black label and icon.
+        // Hover: transparent with a glowing white border and white label (same reason as above).
+        &.white_butn {
+            color: #000;
+
+            &:hover {
+                background-color: transparent;
+                border-color: #fff;
+                color: #fff !important;
+                box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+            }
+
+            &.hvr-txt-trans:hover .txt::after {
+                color: #fff;
+            }
+        }
     }
 
     &:hover {
@@ -206,4 +314,4 @@
         order: -1;
     }
 
-}
+}

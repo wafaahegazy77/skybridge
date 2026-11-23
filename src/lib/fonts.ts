@@ -36,3 +36,19 @@ export const poppins = localFont({
     display: "swap",
     preload: false,
 });
+
+// Navbar navigation links (as specified in Figma).
+export const manrope = localFont({
+    src: [
+        { path: "../../public/fonts/manrope/extraLight.ttf", weight: "200", style: "normal" },
+        { path: "../../public/fonts/manrope/light.ttf", weight: "300", style: "normal" },
+        { path: "../../public/fonts/manrope/regular.ttf", weight: "400", style: "normal" },
+        { path: "../../public/fonts/manrope/medium.ttf", weight: "500", style: "normal" },
+        { path: "../../public/fonts/manrope/semiBold.ttf", weight: "600", style: "normal" },
+        { path: "../../public/fonts/manrope/bold.ttf", weight: "700", style: "normal" },
+        { path: "../../public/fonts/manrope/extraBold.ttf", weight: "800", style: "normal" },
+    ],
+    variable: "--font-manrope",
+    display: "swap",
+    preload: false,
+});

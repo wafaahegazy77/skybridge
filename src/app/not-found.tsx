@@ -1,17 +1,19 @@
-"use client";
+import Image from "next/image";
+import "./_NotFound.scss";
 
-import NextError from "next/error";
-import { routing } from "@/i18n/routing";
-import { getDirection } from "@/utils/getDirection";
-
-// Fallback for requests that never reach a locale segment.
-// Localized 404s are handled by app/[locale]/not-found.tsx.
-export default function GlobalNotFound() {
+export default function NotFound() {
     return (
-        <html lang={routing.defaultLocale} dir={getDirection(routing.defaultLocale)}>
-            <body>
-                <NextError statusCode={404} />
-            </body>
-        </html>
+        <div className="not-found d-flex align-items-center justify-content-center">
+            <div className="col-lg-6 mx-auto">
+                <Image
+                    src="/images/not_found.svg"
+                    alt="Page not found"
+                    width={500}
+                    height={500}
+                    className="not-found__image img-contain"
+                    priority
+                />
+            </div>
+        </div>
     );
 }

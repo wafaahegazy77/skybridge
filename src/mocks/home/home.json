@@ -1,0 +1,14 @@
+{
+    "hero": {
+        "eyebrow": "Where every sense sparks a memory",
+        "title": "Where every sense sparks a memory",
+        "primaryAction": {
+            "label": "About Us",
+            "href": "#"
+        },
+        "secondaryAction": {
+            "label": "Learn More",
+            "href": "#"
+        }
+    }
+}

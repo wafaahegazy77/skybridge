@@ -1,17 +1,24 @@
-// Central list of internal routes. Update once the Figma sitemap is confirmed.
+// Central list of internal routes.
 export const ROUTES = {
     home: "/",
-    products: "/products",
-    pricing: "/pricing",
-    download: "/download",
-    login: "/login",
-    contact: "/contact",
 } as const;
 
-// Main navigation items. `labelKey` refers to keys in the "navbar" translation namespace.
-export const NAV_LINKS = [
-    { labelKey: "home", href: ROUTES.home },
-    { labelKey: "products", href: ROUTES.products },
-    { labelKey: "pricing", href: ROUTES.pricing },
-    { labelKey: "download", href: ROUTES.download },
-] as const;
+// Placeholder href for links whose destination is not decided yet.
+const PENDING = "#";
+
+export type NavLink = {
+    label: string;
+    href: string;
+};
+
+// Main navigation (Figma: Home → Menu → linkes). Update hrefs here once the pages exist.
+export const NAV_LINKS: readonly NavLink[] = [
+    { label: "Home", href: ROUTES.home },
+    { label: "About", href: PENDING },
+    { label: "Services", href: PENDING },
+    { label: "Careers", href: PENDING },
+    { label: "Works", href: PENDING },
+];
+
+// Navbar call to action (Figma: Home → Menu → Group 16 → "Start Project").
+export const NAV_CTA: NavLink = { label: "Start Project", href: PENDING };

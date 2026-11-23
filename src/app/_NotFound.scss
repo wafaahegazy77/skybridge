@@ -1,10 +1,10 @@
 // Moved from inline styles; visual output unchanged.
 .not-found {
     padding: 40px 0;
-
+    min-height: 100vh;
     &__image {
         display: block;
-        width: 40%;
+        width: 60%;
         height: auto;
         margin: 0 auto;
         object-fit: contain;

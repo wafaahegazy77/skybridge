@@ -1,7 +1,4 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
-
-const withNextIntl = createNextIntlPlugin();
 
 // Deployed on a Node.js server (not a static export), so image optimization is enabled.
 const nextConfig: NextConfig = {
@@ -11,4 +8,4 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;

@@ -1,12 +1,354 @@
-.hero_section {
+// -------------------------------------------
+//  Hero (Figma: Home → header, desktop 1512px)
+//  Desktop (≥ 1400px) matches Figma exactly; smaller breakpoints are below.
+// -------------------------------------------
+
+.hero {
     position: relative;
-    padding-top: 100px;
+    z-index: 2; // keeps the travelling wordmark above the next section
+    height: 895px; // Figma: header background 1512 × 895
+    background-color: #1a1a1a;
+    color: #fff;
 
+    // Entrance pre-state: hidden until useHeroAnimation has applied its initial GSAP states.
+    // `visibility` keeps every element's box, so nothing shifts when it appears.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-hero-state="pending"] .hero__reveal {
+        visibility: hidden;
+        animation: hero-failsafe 0s linear 3s forwards;
+    }
 
+    // ---------- Background (clipped layer) ----------
+    &__bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    &__glows {
+        position: absolute;
+        inset: 0;
+    }
+
+    // Figma ellipses 530 × 609 with blur 300.
+    // Rendered as radial gradients sized 530 + 2·300 × 609 + 2·300 instead of an expensive blur filter.
+    // Desktop positions are relative to the page center (756px on the 1512 frame).
+    &__glow {
+        position: absolute;
+        width: 1130px;
+        height: 1209px;
+        border-radius: 50%;
+
+        // Figma: x -98, y -150, #2DD975 at 40%
+        &--green {
+            left: calc(50% - 1154px);
+            top: -450px;
+            background: radial-gradient(
+                closest-side,
+                rgba(45, 217, 117, 0.34),
+                rgba(45, 217, 117, 0.28) 35%,
+                rgba(45, 217, 117, 0.16) 60%,
+                rgba(45, 217, 117, 0.06) 80%,
+                rgba(45, 217, 117, 0)
+            );
+        }
+
+        // Figma: x 1028, y -291, #5B2EE0 at 35%
+        &--purple {
+            left: calc(50% - 28px);
+            top: -591px;
+            background: radial-gradient(
+                closest-side,
+                rgba(91, 46, 224, 0.3),
+                rgba(91, 46, 224, 0.245) 35%,
+                rgba(91, 46, 224, 0.14) 60%,
+                rgba(91, 46, 224, 0.05) 80%,
+                rgba(91, 46, 224, 0)
+            );
+        }
+    }
+
+    // Figma "header_shap 1": 1920 × 1062 at x -408, y -186.
+    // Two stacked <svg> layers of interleaved lines: a static base and a slowly drifting layer.
+    &__lines {
+        position: absolute;
+        top: -186px;
+        left: calc(50% - 1164px);
+        width: 1920px;
+        height: 1062px;
+    }
+
+    &__lines-layer {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        overflow: visible;
+
+        // Only the drifting layer is composited, so the ambient motion never repaints the paths.
+        &--drift {
+            @media (prefers-reduced-motion: no-preference) {
+                will-change: transform;
+            }
+        }
+    }
+
+    // ---------- Content ----------
+    &__content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 249px; // Figma: label pill y = 249
+        text-align: center;
+    }
+
+    // Figma: 375 × 56 glass pill, white 2%, 1px white 20% border (inside), radius 40, blur 15.
+    // Text is centered on both axes (flex), independent of font metrics.
+    &__eyebrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 375px;
+        height: 56px;
+        margin: 0;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 40px;
+        background-color: rgba(255, 255, 255, 0.02);
+        -webkit-backdrop-filter: blur(7.5px);
+        backdrop-filter: blur(7.5px);
+        color: #fff;
+    }
+
+    &__eyebrow-text {
+        display: block;
+        font-family: var(--font-heading);
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: 0;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    // Figma: Bagoss Medium 90 / 98, -2%, white, 897px box at y 313.
+    // The wrapper holds the real heading and its decorative outline copy (same box → same line breaks).
+    &__title-wrap {
+        position: relative;
+        max-width: 897px;
+        margin: 8px 0 42px; // label ends at 305 → title 313; title ends at 509 → buttons 551
+    }
+
+    &__title,
+    &__title-outline {
+        display: block;
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 90px;
+        font-weight: 500;
+        line-height: 98px;
+        letter-spacing: -0.02em;
+    }
+
+    &__title {
+        color: #fff;
+    }
+
+    // Green contour version of the heading, only visible during the entrance.
+    &__title-outline {
+        position: absolute;
+        inset: 0;
+        color: transparent;
+        -webkit-text-stroke: 1px var(--primary);
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    &[data-hero-state="animating"] &__title-outline {
+        visibility: visible;
+    }
+
+    // Figma: buttons 16px apart, centered.
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    // ---------- Wordmark (outside the clipped background so it can travel) ----------
+    // Figma: 1256 × 135, centered, bottom edge 4px above the end of the Hero (y 756 on desktop).
+    // Never wider than the viewport minus 24px per side.
+    &__wordmark {
+        position: absolute;
+        z-index: 3;
+        right: 0;
+        bottom: 4px;
+        left: 0;
+        width: min(1256px, calc(100% - 48px));
+        margin: 0 auto;
+        aspect-ratio: 1256 / 135;
+        pointer-events: none;
+    }
+
+    &__wordmark-mask,
+    &__wordmark-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
 }
 
-@media screen and (max-width: 991px) {
+// While the scroll travel is active, the Intro's static wordmark is hidden,
+// so only one wordmark is ever visible (toggled by useHeroAnimation).
+:root.is-wordmark-travel [data-wordmark-target] {
+    visibility: hidden;
+}
 
+@keyframes hero-failsafe {
+    to {
+        visibility: visible;
+    }
+}
 
+@media (prefers-reduced-motion: reduce) {
+    .hero[data-hero-state="pending"] .hero__reveal {
+        visibility: visible;
+        animation: none;
+    }
+}
 
+// ===========================================
+//  Responsive (desktop ≥ 1400px is untouched)
+// ===========================================
+
+// Large desktop / laptop: same layout; glows follow the viewport proportionally
+// (same positions as Figma at 1512px: green center at 11.05%, purple center at 85.52%).
+@media (max-width: 1399.98px) {
+    .hero__glow--green {
+        left: calc(11.05% - 565px);
+    }
+
+    .hero__glow--purple {
+        left: calc(85.52% - 565px);
+    }
+}
+
+// Tablet: the Hero grows with its content; heading scaled to keep the 2-line composition.
+@media (max-width: 991.98px) {
+    .hero {
+        height: auto;
+        // wordmark height (width × 135/1256) + breathing room above it
+        padding-bottom: calc((100vw - 48px) * 0.1075 + 96px);
+    }
+
+    .hero__content {
+        padding-top: 200px;
+    }
+
+    .hero__title-wrap {
+        max-width: 640px;
+        margin: 8px 0 36px;
+    }
+
+    .hero__title,
+    .hero__title-outline {
+        font-size: 64px;
+        line-height: 70px;
+    }
+
+    // Contour field scaled to 75% so the waves stay visible across the narrower canvas.
+    .hero__lines {
+        top: -120px;
+        left: calc(50% - 873px);
+        width: 1440px;
+        height: 797px;
+    }
+
+    .hero__glow {
+        width: 900px;
+        height: 960px;
+
+        &--green {
+            left: calc(11% - 450px);
+            top: -380px;
+        }
+
+        &--purple {
+            left: calc(86% - 450px);
+            top: -470px;
+        }
+    }
+}
+
+// Mobile: compact pill, 3-line heading, buttons stay side by side (wrap only on very narrow screens).
+@media (max-width: 767.98px) {
+    .hero {
+        padding-bottom: calc((100vw - 48px) * 0.1075 + 72px);
+    }
+
+    .hero__content {
+        padding-top: 140px;
+    }
+
+    .hero__eyebrow {
+        width: auto;
+        height: 44px;
+        padding: 0 22px;
+    }
+
+    .hero__eyebrow-text {
+        font-size: 12px;
+    }
+
+    .hero__title-wrap {
+        max-width: 100%;
+        margin: 12px 0 32px;
+    }
+
+    .hero__title,
+    .hero__title-outline {
+        font-size: 44px;
+        line-height: 50px;
+        text-wrap: balance;
+    }
+
+    .hero__actions {
+        gap: 12px;
+    }
+
+    .hero__lines {
+        top: -60px;
+        left: calc(50% - 698px);
+        width: 1152px;
+        height: 637px;
+    }
+
+    .hero__glow {
+        width: 620px;
+        height: 660px;
+
+        &--green {
+            left: calc(10% - 310px);
+            top: -260px;
+        }
+
+        &--purple {
+            left: calc(90% - 310px);
+            top: -320px;
+        }
+    }
+}
+
+@media (max-width: 399.98px) {
+    .hero__title,
+    .hero__title-outline {
+        font-size: 38px;
+        line-height: 44px;
+    }
 }

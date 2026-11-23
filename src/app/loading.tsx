@@ -9,9 +9,9 @@ export default function Loading() {
                     <span className="ring ring3"></span>
 
                     <div className="loader_logo">
-                        {/* Plain <img> kept until the final Skybridge logo asset is provided (Phase 2). */}
+                        {/* Plain <img>: a tiny decorative icon inside a CSS-only loader. */}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/images/favicon.png" alt="Logo" className="icon object-fit-contain" />
+                        <img src="/images/icon.png" alt="Logo" className="icon object-fit-contain" />
                     </div>
                 </div>
 
