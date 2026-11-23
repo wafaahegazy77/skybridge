@@ -1,0 +1,17 @@
+{
+    "metadata": {
+        "title": "Skybridge",
+        "description": "Skybridge"
+    },
+    "navbar": {
+        "home": "Home",
+        "products": "Products",
+        "pricing": "Plans & Pricing",
+        "download": "Download",
+        "contact": "Contact Us",
+        "login": "Login"
+    },
+    "notFound": {
+        "imageAlt": "Page not found"
+    }
+}

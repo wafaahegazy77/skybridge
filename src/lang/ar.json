@@ -1,0 +1,17 @@
+{
+    "metadata": {
+        "title": "Skybridge",
+        "description": "Skybridge"
+    },
+    "navbar": {
+        "home": "الرئيسية",
+        "products": "المنتجات",
+        "pricing": "الباقات والأسعار",
+        "download": "التحميل",
+        "contact": " تواصل معنا  ",
+        "login": "تسجيل الدخول"
+    },
+    "notFound": {
+        "imageAlt": "الصفحة غير موجودة"
+    }
+}
