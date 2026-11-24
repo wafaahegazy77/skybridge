@@ -1,0 +1,389 @@
+// Home – Contact call to action (Figma "call action": 1512 × 596 card at y 8960 on the 1512 frame).
+// A full-width #1A1A1A card with 30px corners; inside, clipped to the card, two blurred glows and the
+// green triangle. Left: "Contact Us Today!", the title and the two contact rows; centre: the round
+// "Contact Us" button. All positions below are measured from the card (top) and the 1206 grid (left).
+
+.contact-cta {
+    position: relative;
+
+    // Figma "Rectangle 15" (and its mask "Rectangle 16"): #1A1A1A, 30px corners, 596px high.
+    &__card {
+        position: relative;
+        isolation: isolate; // decor below the content
+        overflow: hidden; // the glows and the triangle are clipped to the card (Figma mask)
+        min-height: 596px;
+        padding: 89px 0 92px; // eyebrow 89px from the top; the contact rows end 92px above the bottom
+        background-color: #1a1a1a;
+        border-radius: 30px;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Decor (Figma "Mask group"). Anchored to the card centre so it stays with the centred grid on
+    // wider screens.
+    // -----------------------------------------------------------------------------------------
+
+    &__decor {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    // Figma ellipses (530 × 776) with layer blur 300, drawn as radial gradients over the ellipse plus
+    // the blur reach (300px each side) instead of a costly blur filter.
+    &__glow {
+        position: absolute;
+        width: 1130px;
+        height: 1376px;
+        border-radius: 50%;
+
+        // Figma "Ellipse 1": #2DD975 at 40%, 98px left of and 191px above the card's left top corner.
+        &--green {
+            top: -491px;
+            left: calc(50% - 1154px);
+            background: radial-gradient(
+                closest-side,
+                rgba(45, 217, 117, 0.34),
+                rgba(45, 217, 117, 0.28) 35%,
+                rgba(45, 217, 117, 0.16) 60%,
+                rgba(45, 217, 117, 0.06) 80%,
+                rgba(45, 217, 117, 0)
+            );
+        }
+
+        // Figma "Ellipse 2": #5B2EE0 at 35%, at x 1028 / 371px above the card.
+        &--purple {
+            top: -671px;
+            left: calc(50% - 28px);
+            background: radial-gradient(
+                closest-side,
+                rgba(91, 46, 224, 0.3),
+                rgba(91, 46, 224, 0.245) 35%,
+                rgba(91, 46, 224, 0.14) 60%,
+                rgba(91, 46, 224, 0.05) 80%,
+                rgba(91, 46, 224, 0)
+            );
+        }
+    }
+
+    // Figma "fav-lg 4": 1228 × 1075 at x 725 / 281px above the card (the visible part is its lower left).
+    &__mark {
+        position: absolute;
+        top: -281px;
+        left: calc(50% - 31px);
+        width: 1228px;
+        max-width: none;
+        height: auto;
+        user-select: none;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Content
+    // -----------------------------------------------------------------------------------------
+
+    // Left column 603px (Figma title box); the button 32px to its right (x 635 on the grid), 99px
+    // lower than the eyebrow (y 188 on the card).
+    &__inner {
+        display: grid;
+        grid-template-columns: minmax(0, 603px) 220px;
+        column-gap: 32px;
+        align-items: start;
+        max-width: 1206px;
+        margin: 0 auto;
+    }
+
+    // Figma: Poppins Medium 17, white.
+    &__eyebrow {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 17px;
+        font-weight: 500;
+        line-height: 26px;
+        color: #fff;
+    }
+
+    // Figma: Bagoss Medium 48, line height auto (54), white; 42px below the eyebrow's top.
+    &__title {
+        margin: 16px 0 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        color: #fff;
+    }
+
+    &__details {
+        margin: 59px 0 0; // Figma: the first row starts 59px below the title
+        font-style: normal;
+    }
+
+    &__list {
+        display: grid;
+        gap: 36px; // Figma: 121px between the two rows' tops (85px rows)
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    // Figma "Location" rows: 45px icon circle (7px lower than the text), text 69px from the row's left.
+    &__item {
+        display: grid;
+        grid-template-columns: 45px minmax(0, 1fr);
+        column-gap: 24px;
+        align-items: start;
+    }
+
+    // Figma "Ellipse 2": white 4% fill, 1px inside stroke white 20%, background blur 20 (CSS 10px);
+    // white 1px-line icon centred.
+    &__icon {
+        display: grid;
+        place-items: center;
+        width: 45px;
+        height: 45px;
+        margin-top: 7px;
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+    }
+
+    // Text box 230px wide (Figma: the address wraps after "Dubai,").
+    &__item-text {
+        max-width: 230px;
+    }
+
+    // Figma: DM Sans Bold 18 / 28, white. DM Sans is not one of the project fonts: Poppins (body font),
+    // same size and weight.
+    &__item-title {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 28px;
+        color: #fff;
+    }
+
+    // Figma: DM Sans Regular 16 / 26, #A4A4A4, 5px below the title (Poppins, see above).
+    &__item-line {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 26px;
+        color: #a4a4a4;
+    }
+
+    &__item-title + &__item-line {
+        margin-top: 5px;
+    }
+
+    // Phone and e-mail lines stay on one line: Poppins runs wider than the Figma DM Sans, and the
+    // 230px box would otherwise split "Mail:" from the address.
+    &__item-line--nowrap {
+        white-space: nowrap;
+    }
+
+    // Phone and e-mail links: same look as the text; the global link hover (Skybridge green) applies.
+    &__link {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.25s ease;
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+    }
+
+    // Figma "Button": 220px white circle; 34 × 35 arrow (#1A1A1A) 82px from the top, the label 13px
+    // below it (the pair sits 9px below the circle's centre).
+    &__button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        width: 220px;
+        height: 220px;
+        margin-top: 99px;
+        padding-top: 18px;
+        color: #1a1a1a;
+        text-decoration: none;
+        background-color: #fff;
+        border-radius: 50%;
+        transition:
+            background-color 0.35s ease,
+            transform 0.35s ease;
+
+        // Not defined in Figma: the circle fills with Skybridge green and the arrow nudges toward its
+        // direction. The global `a:hover` colour (!important) is overridden so the label stays dark.
+        &:hover {
+            color: #1a1a1a !important;
+            background-color: var(--primary);
+            transform: scale(1.04);
+
+            .contact-cta__button-icon {
+                transform: translate(4px, -4px);
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 6px;
+        }
+    }
+
+    &__button-icon {
+        width: 34px;
+        height: 35px;
+        transition: transform 0.35s ease;
+    }
+
+    // Figma: Bagoss Regular 17 / 26, uppercase, letter spacing 1%, #1A1A1A, centred.
+    &__button-label {
+        font-family: var(--font-heading);
+        font-size: 17px;
+        font-weight: 400;
+        line-height: 26px;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contact-cta__button,
+    .contact-cta__button-icon,
+    .contact-cta__link {
+        transition: none;
+    }
+
+    .contact-cta__button:hover {
+        transform: none;
+
+        .contact-cta__button-icon {
+            transform: none;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive (no Figma: agreed adaptations)
+// ---------------------------------------------------------------------------------------------
+
+@media (max-width: 1199.98px) {
+    .contact-cta__title {
+        font-size: 40px;
+        line-height: 46px;
+    }
+}
+
+// Tablets: the button stays to the right of the text, vertically centred on it.
+@media (max-width: 991.98px) {
+    .contact-cta__card {
+        min-height: 0;
+        padding: 80px 0;
+    }
+
+    .contact-cta__inner {
+        grid-template-columns: minmax(0, 1fr) 180px;
+        align-items: center;
+    }
+
+    .contact-cta__details {
+        margin-top: 48px;
+    }
+
+    .contact-cta__button {
+        width: 180px;
+        height: 180px;
+        margin-top: 0;
+        padding-top: 14px;
+    }
+
+    .contact-cta__button-icon {
+        width: 28px;
+        height: 29px;
+    }
+}
+
+// Phones: one column, the button below the contact rows; the triangle sits in the lower-right corner,
+// behind the button, so it never runs under the text.
+@media (max-width: 767.98px) {
+    .contact-cta__card {
+        padding: 64px 0;
+        border-radius: 24px;
+    }
+
+    .contact-cta__inner {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 48px;
+    }
+
+    .contact-cta__eyebrow {
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    .contact-cta__title {
+        margin-top: 12px;
+        font-size: 30px;
+        line-height: 36px;
+    }
+
+    .contact-cta__details {
+        margin-top: 40px;
+    }
+
+    .contact-cta__list {
+        gap: 28px;
+    }
+
+    .contact-cta__item {
+        column-gap: 16px;
+    }
+
+    .contact-cta__item-title {
+        font-size: 17px;
+        line-height: 26px;
+    }
+
+    .contact-cta__item-line {
+        font-size: 15px;
+        line-height: 24px;
+    }
+
+    .contact-cta__button {
+        width: 160px;
+        height: 160px;
+        padding-top: 12px;
+        gap: 10px;
+    }
+
+    .contact-cta__button-icon {
+        width: 26px;
+        height: 27px;
+    }
+
+    .contact-cta__button-label {
+        font-size: 15px;
+        line-height: 22px;
+    }
+
+    .contact-cta__mark {
+        top: auto;
+        right: -240px;
+        bottom: -210px;
+        left: auto;
+        width: 560px;
+    }
+
+    .contact-cta__glow--purple {
+        top: auto;
+        bottom: -900px;
+        left: auto;
+        right: -700px;
+    }
+}

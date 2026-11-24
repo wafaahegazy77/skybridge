@@ -7,7 +7,7 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const FONT_TIMEOUT_MS = 800; // never keep the Hero hidden longer than this waiting for web fonts
-const TRAVEL_MEDIA = "(min-width: 1200px)"; // wordmark travel is desktop-only
+const RECEDE_MEDIA = "(min-width: 1200px)"; // the content "recede" on scroll is desktop-only
 const TRAVEL_CLASS = "is-wordmark-travel"; // hides the Intro's static wordmark while the Hero one travels
 
 type HeroState = "pending" | "animating" | "ready" | "static";
@@ -170,21 +170,21 @@ function setupAmbient(root: HTMLElement) {
 }
 
 /**
- * Scroll-linked behavior (desktop, motion allowed):
- * - Hero content recedes slightly while scrolling away.
- * - The wordmark scales and travels onto the Intro slot marked with [data-wordmark-target].
+ * Scroll-linked behavior (motion allowed):
+ * - Desktop: Hero content recedes slightly while scrolling away.
+ * - All sizes: the wordmark scales and travels onto the Intro slot marked with [data-wordmark-target].
  *   Both elements stay in normal document flow, so once landed it scrolls on with the Intro (no pinning).
  *   Until the Intro exists, no target is found and the wordmark simply stays in place.
  */
 function setupScroll(root: HTMLElement, mm: gsap.MatchMedia) {
     mm.add(
-        { isDesktop: TRAVEL_MEDIA, motionOk: "(prefers-reduced-motion: no-preference)" },
+        { isDesktop: RECEDE_MEDIA, motionOk: "(prefers-reduced-motion: no-preference)" },
         (context) => {
             const { isDesktop, motionOk } = context.conditions as { isDesktop: boolean; motionOk: boolean };
-            if (!isDesktop || !motionOk) return;
+            if (!motionOk) return;
 
             const content = root.querySelector<HTMLElement>(".hero__content");
-            if (content) {
+            if (content && isDesktop) {
                 gsap.to(content, {
                     y: -60,
                     opacity: 0.4,

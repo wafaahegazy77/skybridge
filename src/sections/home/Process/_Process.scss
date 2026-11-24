@@ -1,0 +1,449 @@
+// Home – The Event Planning Process (Figma "process": 1515 × 1109 at y 6771 on the 1512 frame).
+// Header (title left, description right) above the step cards. In Figma the first card is in focus on the
+// left and the next one waits behind it on the right, smaller and blurred: that is the resting state of
+// the 3D scroll sequence (useProcessAnimation, Vine "/Create a unified ecosystem" interaction).
+//
+// States (data-process-state on the section):
+// - pending / static (no JavaScript, reduced motion, very short screens): the cards as a plain grid.
+// - armed: pinned full-screen stage; the cards are stacked in depth and moved by useProcessAnimation.
+
+.process {
+    position: relative;
+    overflow: hidden; // the 3D cards and the background layers never cause scrolling
+ // Partners ends at y 6771 → header at 6925; cards end 152px above the next frame
+    color: #fff;
+
+    // -----------------------------------------------------------------------------------------
+    // Background (Figma "BG")
+    // -----------------------------------------------------------------------------------------
+
+    &__bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    // Figma linear gradient at 10%: #0011FF → #2DD975 (40.5%) → #1A1F1F (63%) → #1C1C1C, at 127°.
+    // The Figma handles start inside the frame and end far outside it, hence the stops beyond 100%.
+    &__bg-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(127deg, #0011ff 15%, #2dd975 75.7%, #1a1f1f 109.4%, #1c1c1c 164.8%);
+        opacity: 0.1;
+        border-radius: 50px;
+    }
+
+    // Figma image fill at 5%, desaturated (vibrance −1, baked into the WebP). The image box starts 160px
+    // above and 21px left of the frame (1536 × 1154 on 1515 × 1109): kept here in % of the section.
+    &__bg-image {
+        position: absolute;
+        inset: -14.43% 0 10.37% -1.39%;
+        background: url("/images/process/process-bg.webp") center / cover no-repeat;
+        opacity: 0.05;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Header (Figma "Group 17", 1210 × 180)
+    // -----------------------------------------------------------------------------------------
+
+    &__inner {
+        position: relative;
+        max-width: 1206px;
+        margin: 0 auto;
+    }
+
+    &__header {
+        position: relative;
+        z-index: 2; // stays above a card flying past the camera
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 40px;
+    }
+
+    // Figma: Bagoss Medium 48, line height auto (54), uppercase, white; text box 523px wide.
+    &__title {
+        flex: 0 1 523px;
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    // Figma: Poppins Regular 24, line height auto (36), #A4A4A4; text box 589px wide, at the right.
+    &__description {
+        flex: 0 1 589px;
+        margin: 0 -4px 0 0; // the Figma box ends 4px past the 1206 grid
+        font-family: var(--font-body);
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 36px;
+        color: #a4a4a4;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Stage and cards
+    // -----------------------------------------------------------------------------------------
+
+    // First card 331px below the header top (180px header + 151px).
+    &__stage {
+        position: relative;
+        margin-top: 151px;
+    }
+
+    // Figma "fav-lg 3": the triangle, 90px right of the grid and 367px above the first card
+    // (exported with its Figma look: grey, 2%). Behind everything.
+    &__mark {
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        width: 60%;
+        max-width: none;
+        height: auto;
+        pointer-events: none;
+        user-select: none;
+        object-fit: contain;
+        transform: translate(-50% , -50%);
+    }
+
+    // Static grid (pending / static): the Figma cards, two per row.
+    &__list {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 588px));
+        justify-content: space-between;
+        gap: 30px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    // Figma "Rectangle 17": 588 × 323, white 2% fill, 1px inside stroke white 15%, 30px corners,
+    // background blur 20 (CSS 10px). Badge at x 41 / y 43; subtitle and text at x 47 (6px further in,
+    // as in Figma); text box 503px wide. Padding values exclude the 1px border.
+    &__card {
+        position: relative;
+        min-height: 323px;
+        padding: 42px 37px 43px 40px;
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 30px;
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+    }
+
+    // Badge + title on one row, the title centered on the badge, 20px from it.
+    &__card-head {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    // Figma "Group 40": 70 × 70 badge, same glass style as the card, 10px corners; Bagoss 24 #2DD975.
+    &__card-number {
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 70px;
+        height: 70px;
+        font-family: var(--font-heading);
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 1;
+        color: var(--primary);
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+    }
+
+    // Figma: Bagoss Regular 32, line height auto (36), white.
+    &__card-title {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 32px;
+        font-weight: 400;
+        line-height: 36px;
+        color: #fff;
+    }
+
+    // Figma: Bagoss Regular 20, #2DD975, 44px below the badge.
+    &__card-subtitle {
+        margin: 44px 0 0 6px;
+        font-family: var(--font-heading);
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 22px;
+        color: var(--primary);
+    }
+
+    // Figma: Poppins Regular 17, line height auto, #A4A4A4, 12px below the subtitle.
+    &__card-description {
+        max-width: 503px;
+        margin: 12px 0 0 6px;
+        font-family: var(--font-body);
+        font-size: 17px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #a4a4a4;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Armed: full-screen pinned stage (useProcessAnimation)
+    // -----------------------------------------------------------------------------------------
+
+    &[data-process-state="armed"] {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        min-height: 100svh;
+        padding: 24px 0;
+
+        > .container {
+            display: flex;
+            flex: 1;
+        }
+
+        // Figma keeps about the same space above the header, between header and cards, and below the
+        // cards (154 / 151 / 152): the free height of the screen is shared the same way.
+        .process__inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            justify-content: space-evenly;
+            width: 100%;
+        }
+
+        .process__header {
+            margin-bottom: 100px;
+            padding-top: 70px;
+        }
+
+        .process__stage {
+            margin-top: 0;
+        }
+
+        // All cards share one grid cell (as tall as the tallest card), one behind the other.
+        .process__list {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 0;
+        }
+
+        .process__card {
+            grid-area: 1 / 1;
+            z-index: calc(100 - var(--process-index)); // nearer cards always paint over farther ones
+            // Backdrop blur cannot see through the 3D stage (each card is filtered), and repainting it on
+            // every frame is costly: the glass fill alone is kept while the cards move.
+            -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+            will-change: transform, opacity, filter;
+        }
+    }
+}
+
+// Desktop (992px+): two alternating columns in depth (Vine desktop).
+// Seen from 1000px away, toward a point 1098px below the first card's top: with that origin the card one
+// step behind (238px deeper) lands exactly on the Figma next card (x 674, 211px lower, 475 × 261).
+// The bottom padding keeps room for that peek.
+@media (min-width: 992px) {
+    .process[data-process-state="armed"] {
+        // 588px on the 1206 grid (48.76%), narrower with the grid on smaller laptops.
+        --process-card-w: min(588px, 48.76%);
+
+        .process__list {
+            padding-bottom: 149px;
+            perspective: 1000px;
+            perspective-origin: 50% 1098px;
+        }
+
+        .process__card {
+            width: var(--process-card-w);
+            // Resting state (before the first update): the Figma composition.
+            transform: translate3d(0, 0, calc(var(--process-index) * -238px));
+
+            &:nth-child(2) {
+                filter: blur(2px); // Figma layer blur 4
+            }
+
+            &:nth-child(n + 3) {
+                opacity: 0;
+            }
+        }
+
+        // Right column: the Figma next card is 690.9px from the grid's left edge once in focus (57.29%);
+        // never closer than 24px to the screen edge on narrower screens.
+        .process__card--right {
+            left: min(57.29%, calc(100% - var(--process-card-w) + (100vw - 100%) / 2 - 24px));
+        }
+    }
+}
+
+// Below 992px (Vine mobile variant): one card at a time, centered on its own middle; the next card waits
+// hidden behind it.
+@media (max-width: 991.98px) {
+    .process[data-process-state="armed"] {
+        padding: 16px 0;
+
+        .process__list {
+            perspective: 1000px;
+            perspective-origin: 50% 50%;
+        }
+
+        .process__card {
+            width: min(588px, 100%);
+            transform: translate3d(0, 0, calc(var(--process-index) * -238px));
+
+            &:nth-child(n + 2) {
+                opacity: 0;
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive (no Figma: agreed adaptations)
+// ---------------------------------------------------------------------------------------------
+
+// Small laptops: header still in two columns with smaller type; narrower cards, smaller card type.
+@media (max-width: 1199.98px) {
+    .process__title {
+        flex-basis: 40%;
+        font-size: 40px;
+        line-height: 46px;
+    }
+
+    .process__description {
+        flex-basis: 55%;
+        margin-right: 0;
+        font-size: 20px;
+        line-height: 30px;
+    }
+
+    // .process__mark {
+    //     left: 50%;
+    //     transform: translateX(-50%);
+    // }
+
+    .process__card-title {
+        font-size: 28px;
+        line-height: 32px;
+    }
+
+    .process__card-description {
+        font-size: 16px;
+    }
+}
+
+// Tablets: header stacked; one card per row in the static grid.
+@media (max-width: 991.98px) {
+    .process {
+        padding: 120px 0;
+    }
+
+    .process__header {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .process__title,
+    .process__description {
+        flex: none;
+        max-width: 720px;
+    }
+
+    .process__stage {
+        margin-top: 64px;
+    }
+
+    .process__list {
+        grid-template-columns: minmax(0, 588px);
+        justify-content: start;
+        gap: 20px;
+    }
+}
+
+// Short laptop screens (e.g. 1366 × 768 minus the browser bars): tighter pinned stage.
+@media (min-width: 992px) and (max-height: 760px) {
+    .process[data-process-state="armed"] {
+        padding: 16px 0;
+
+        .process__header {
+            margin-bottom: 16px;
+        }
+
+        .process__description {
+            font-size: 20px;
+            line-height: 30px;
+        }
+    }
+}
+
+// Phones: compact cards.
+@media (max-width: 767.98px) {
+    .process {
+        padding: 88px 0;
+    }
+
+    .process__header {
+        gap: 16px;
+    }
+
+    .process__title {
+        font-size: 30px;
+        line-height: 36px;
+    }
+
+    .process__description {
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    .process__stage {
+        margin-top: 40px;
+    }
+
+    // .process__mark {
+    //     top: -220px;
+    //     width: 130%;
+    // }
+
+    .process__list {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .process__card {
+        min-height: 0;
+        padding: 28px 22px 30px;
+        border-radius: 24px;
+    }
+
+    .process__card-head {
+        gap: 16px;
+    }
+
+    .process__card-number {
+        width: 52px;
+        height: 52px;
+        font-size: 20px;
+    }
+
+    .process__card-title {
+        font-size: 22px;
+        line-height: 26px;
+    }
+
+    .process__card-subtitle {
+        margin: 24px 0 0;
+        font-size: 17px;
+        line-height: 20px;
+    }
+
+    .process__card-description {
+        margin: 10px 0 0;
+        font-size: 15px;
+    }
+}

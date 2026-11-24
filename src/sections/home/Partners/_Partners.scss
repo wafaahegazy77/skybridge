@@ -1,0 +1,214 @@
+// Home – Our Trusted Partners (Figma "clients section": header + two rows of logo cards at y 5972 on the
+// 1512 frame). The rows bleed past both screen edges in Figma; here they run full width as two endless
+// marquees in opposite directions (pure CSS: one transform animation per row).
+
+.partners {
+    // Figma "Rectangle 22": 225 × 192 cards, 20px apart; logos at their natural size.
+    --partners-card-w: 225px;
+    --partners-card-h: 192px;
+    --partners-card-radius: 30px;
+    --partners-gap: 20px;
+    --partners-logo-scale: 1;
+    // Time to move one full sequence: the two rows run at slightly different speeds (≈ 25 and 22 px/s).
+    --partners-duration-top: 48s;
+    --partners-duration-bottom: 56s;
+
+    position: relative;
+    padding: 0 0 187px; // Portfolio ends right above (y 5972); the next section starts at y 6771
+    overflow-x: clip; // the moving rows never cause horizontal scrolling
+    color: #fff;
+
+    // Figma "Group 17" (666 × 112, centered): eyebrow at y 0, title at y 59.
+    &__header {
+        text-align: center;
+    }
+
+    // Figma: Poppins Regular 24, #A4A4A4.
+    &__eyebrow {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 36px;
+        color: #a4a4a4;
+    }
+
+    // Figma: Bagoss Medium 48, uppercase, white.
+    &__title {
+        margin: 23px 0 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    // Figma: first row at y 205 (93px below the header), second row at y 420 (23px gap).
+    // Full-width window: logos enter and leave at the screen edges.
+    &__rows {
+        display: grid;
+        row-gap: 23px;
+        margin-top: 93px;
+        overflow: hidden;
+    }
+
+    &__row {
+        overflow: hidden;
+
+        // Top row: left → right (the right-to-left keyframes played backwards).
+        &--right .partners__track {
+            animation-duration: var(--partners-duration-top);
+            animation-direction: reverse;
+        }
+
+        // Bottom row: right → left, slightly slower, starting at a different point of its loop
+        // (Figma shows the two rows offset from each other).
+        &--left .partners__track {
+            animation-duration: var(--partners-duration-bottom);
+            animation-delay: calc(var(--partners-duration-bottom) * -0.42);
+        }
+    }
+
+    // All copies of the sequence side by side. Moving it by one sequence (100% / copies) puts the next
+    // copy exactly where the first one was, so the loop has no visible reset.
+    &__track {
+        display: flex;
+        width: max-content;
+        animation-name: partners-marquee;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        will-change: transform; // one composited layer per row: no layout or repaint while it moves
+    }
+
+    &__group {
+        display: flex;
+        flex: none;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    // Every card carries its own trailing gap, so all copies have exactly the same width.
+    &__card {
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: var(--partners-card-w);
+        height: var(--partners-card-h);
+        margin-right: var(--partners-gap);
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--partners-card-radius);
+    }
+
+    // Figma: white logos at 50% (one logo is shown at 100% — used here as the hover state).
+    // Width from the logo's natural size, height follows its own aspect ratio (never stretched).
+    &__logo {
+        display: block;
+        width: calc(var(--partners-logo-w) * var(--partners-logo-scale));
+        max-width: 80%;
+        height: auto;
+        opacity: 0.5;
+        transition: opacity 0.4s ease;
+        user-select: none;
+    }
+
+    @media (hover: hover) {
+        // Pause a row while the pointer rests on it, so a logo can be looked at.
+        &__row:hover .partners__track {
+            animation-play-state: paused;
+        }
+
+        &__card:hover .partners__logo {
+            opacity: 1;
+        }
+    }
+}
+
+@keyframes partners-marquee {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(calc(-100% / var(--partners-copies, 4)), 0, 0);
+    }
+}
+
+// Reduced motion: both rows stand still (the Figma composition).
+@media (prefers-reduced-motion: reduce) {
+    .partners__track {
+        animation: none;
+    }
+
+    .partners__logo {
+        transition: none;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------------------------
+
+// Tablet: 80% cards and logos.
+@media (max-width: 991.98px) {
+    .partners {
+        --partners-card-w: 180px;
+        --partners-card-h: 154px;
+        --partners-card-radius: 24px;
+        --partners-gap: 16px;
+        --partners-logo-scale: 0.8;
+        --partners-duration-top: 40s;
+        --partners-duration-bottom: 46s;
+
+        padding-bottom: 120px;
+    }
+
+    .partners__eyebrow {
+        font-size: 20px;
+        line-height: 30px;
+    }
+
+    .partners__title {
+        margin-top: 14px;
+        font-size: 40px;
+        line-height: 46px;
+    }
+
+    .partners__rows {
+        row-gap: 16px;
+        margin-top: 56px;
+    }
+}
+
+// Phones: 2⅓ cards across a 390px screen.
+@media (max-width: 575.98px) {
+    .partners {
+        --partners-card-w: 150px;
+        --partners-card-h: 128px;
+        --partners-card-radius: 20px;
+        --partners-gap: 12px;
+        --partners-logo-scale: 0.66;
+        --partners-duration-top: 34s;
+        --partners-duration-bottom: 40s;
+
+        padding-bottom: 88px;
+    }
+
+    .partners__eyebrow {
+        font-size: 18px;
+        line-height: 28px;
+    }
+
+    .partners__title {
+        margin-top: 10px;
+        font-size: 30px;
+        line-height: 36px;
+    }
+
+    .partners__rows {
+        row-gap: 12px;
+        margin-top: 40px;
+    }
+}

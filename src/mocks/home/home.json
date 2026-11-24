@@ -10,5 +10,413 @@
             "label": "Learn More",
             "href": "#"
         }
+    },
+    "intro": {
+        "title": " Crafting Emotion, Designing Impact",
+        "description": "At Skybridge, we are more than planners. We are curators of emotions, experiences, and impact. A collective of passionate marketers, storytellers, and event architects, we bring bold ideas to life through innovation, precision, and purpose. From immersive environments to seamless execution, we craft events that don’t just impress; they leave a lasting impression.",
+        "action": {
+            "label": "About Us",
+            "href": "#"
+        }
+    },
+    "services": {
+        "title": "Our Services",
+        "subtitle": "The best dreams happen when you're awake",
+        "items": [
+            {
+                "title": "Event Conceptualization & Management",
+                "description": "From the first idea to the final applause, we shape every detail into one seamless, memorable event.",
+                "image": {
+                    "src": "/images/services/1.png",
+                    "width": 760,
+                    "height": 1040,
+                    "alt": "Guest wearing headphones under warm red stage lighting"
+                },
+                "action": {
+                    "label": "Learn More",
+                    "href": "#"
+                }
+            },
+            {
+                "title": "AV Systems & Technology",
+                "description": "Sound, light and visuals engineered to work as one, so every moment is seen, heard and felt as intended.",
+                "image": {
+                    "src": "/images/services/2.png",
+                    "width": 760,
+                    "height": 1040,
+                    "alt": "Close-up of a projector zoom lens"
+                },
+                "action": {
+                    "label": "Learn More",
+                    "href": "#"
+                }
+            },
+            {
+                "title": "In-House Production",
+                "description": "Our own team takes concepts from paper to stage, keeping quality, timing and creative intent under one roof.",
+                "image": {
+                    "src": "/images/services/3.png",
+                    "width": 748,
+                    "height": 1040,
+                    "alt": "Camera operator filming under purple studio lights"
+                },
+                "action": {
+                    "label": "Learn More",
+                    "href": "#"
+                }
+            },
+            {
+                "title": "Creative Experiences & Activations",
+                "description": "Immersive moments and brand activations that invite people to step in, take part and remember how it felt.",
+                "image": {
+                    "src": "/images/services/4.png",
+                    "width": 786,
+                    "height": 800,
+                    "alt": "Crowd with raised hands under pink and violet concert lights"
+                },
+                "action": {
+                    "label": "Learn More",
+                    "href": "#"
+                }
+            }
+        ]
+    },
+    "showreel": {
+        "wordStart": "show",
+        "wordEnd": "reel",
+        "video": {
+            "src": "/videos/showreel.mp4",
+            "srcMobile": "/videos/showreel.mp4",
+            "poster": "/images/showreel/showreel-poster.PNG"
+        }
+    },
+    "mission": {
+        "title": "Mission &\nValues Statements",
+        "image": {
+            "src": "/images/mission-1.png",
+            "width": 1740,
+            "height": 1160,
+            "alt": "Fire performer beside the illuminated dubizzle letters at a night event"
+        },
+        "mission": {
+            "label": "Our Mission",
+            "statements": [
+                {
+                    "lead": "Our mission at Skybridge",
+                    "text": " is to\u00a0elevate brands\u00a0to their fullest potential through\u00a0world-class event productions."
+                },
+                {
+                    "lead": "We are committed to delivering",
+                    "text": "\u00a0a seamless, professional experience; from concept to execution - that reflects\u00a0excellence, reliability, and creativity."
+                },
+                {
+                    "lead": "By setting\u00a0new standards\u00a0in\u00a0production quality",
+                    "text": "\u00a0and\u00a0innovation, we aim to leave a\u00a0lasting impact\u00a0not just on our clients and audience, but on the\u00a0global events industry\u00a0as a whole."
+                }
+            ]
+        },
+        "values": {
+            "label": "Our Values",
+            "items": [
+                {
+                    "title": "Unmatched Creativity",
+                    "description": "We don’t design events — we craft sensory journeys that captivate and endure."
+                },
+                {
+                    "title": "Turn-Key Execution",
+                    "description": "End-to-end production with precision, control, and absolute peace of mind."
+                },
+                {
+                    "title": "Uncompromising Quality",
+                    "description": "Excellence isn’t our goal — it’s our baseline. Every detail, owned and perfected."
+                },
+                {
+                    "title": "People at Our Core",
+                    "description": "Our team is our power. We invest, grow, and thrive together to deliver extraordinary."
+                },
+                {
+                    "title": "Driven by Sustainability",
+                    "description": "Smart, responsible, purposeful. We lead with impact and set higher standards for our industry."
+                }
+            ]
+        },
+        "action": {
+            "label": "Learn More",
+            "href": "#"
+        }
+    },
+    "portfolio": {
+        "eyebrow": "See The Skybridge Effect",
+        "title": "Portfolio & Case Studies",
+        "projects": [
+            {
+                "id": "dubizzle-cars-awards-2024",
+                "title": "Dubizzle Cars 2024 Award Ceremony",
+                "subtitle": "An Awards Night with Automotive Edge",
+                "description": "An evening built to recognize achievement across the automotive marketplace. Dark industrial staging, precise lighting cues and a clear running order keep the attention on the honorees, so every walk to the stage becomes its own moment.",
+                "image": {
+                    "src": "/images/mission-1.png",
+                    "width": 1000,
+                    "height": 944,
+                    "alt": "Row of crystal award statuettes on a dark stage under red and white lights"
+                },
+                "action": {
+                    "label": "Learn More",
+                    "href": "#"
+                }
+            },
+            {
+                "id": "diabetes-awareness",
+                "title": "Lighting Up the Nation for Diabetes Awareness",
+                "subtitle": "A Public Health Message, Made Visible",
+                "description": "A public activation built around the campaign’s “100 Day Challenge” message. Clean blue staging, bold typography and open, walk-up installations put a serious health topic where people already are, making it easy to notice, read and remember.",
+                "image": {
+                    "src": "/images/services/1.png",
+                    "width": 1000,
+                    "height": 944,
+                    "alt": "“100 Day Challenge” diabetes awareness installation with blue lettering on a glass panel"
+                },
+                "action": {
+                    "label": "Learn More",
+                    "href": "#"
+                }
+            },
+            {
+                "id": "leadership-summit",
+                "title": "Leadership Summit in the Round",
+                "subtitle": "One Stage, Every Seat in the Conversation",
+                "description": "A central stage surrounded by the audience on all sides, framed by a ring of wide screens. Balanced lighting, clear sightlines and live visuals keep every speaker close to the room, so a full day of talks still feels like one conversation.",
+                "image": {
+                    "src": "/images/portfolio/leadership-summit.webp",
+                    "width": 1000,
+                    "height": 944,
+                    "alt": "Speaker on a central stage in a full auditorium surrounded by wide screens"
+                },
+                "action": {
+                    "label": "Learn More",
+                    "href": "#"
+                }
+            },
+            {
+                "id": "immersive-light-installation",
+                "title": "Immersive Light Installation",
+                "subtitle": "Where the Audience Steps Inside the Show",
+                "description": "A dark, open room transformed by suspended lines of blue light that seem to fold through the space. Guests walk beneath and around the structure, discovering it from every angle, while a soft haze gives every beam its depth and presence.",
+                "image": {
+                    "src": "/images/portfolio/light-installation.webp",
+                    "width": 1000,
+                    "height": 944,
+                    "alt": "Silhouetted visitors in a dark room facing a large installation of blue neon light lines"
+                },
+                "action": {
+                    "label": "Learn More",
+                    "href": "#"
+                }
+            }
+        ]
+    },
+    "partners": {
+        "eyebrow": "See The Skybridge Effect",
+        "title": "Our Trusted Partners",
+        "items": [
+            {
+                "name": "Novo Nordisk",
+                "logo": {
+                    "src": "/images/partners/5.svg",
+                    "width": 94,
+                    "height": 67
+                }
+            },
+            {
+                "name": "dubizzle",
+                "logo": {
+                    "src": "/images/partners/3.svg",
+                    "width": 123,
+                    "height": 40
+                }
+            },
+            {
+                "name": "Boehringer Ingelheim",
+                "logo": {
+                    "src": "/images/partners/4.svg",
+                    "width": 139,
+                    "height": 43
+                }
+            },
+            {
+                "name": "Pfizer",
+                "logo": {
+                    "src": "/images/partners/1.svg",
+                    "width": 136,
+                    "height": 57
+                }
+            },
+            {
+                "name": "Dubai Police",
+                "logo": {
+                    "src": "/images/partners/2.svg",
+                    "width": 135,
+                    "height": 47
+                }
+            }
+        ]
+    },
+    "process": {
+        "title": "The Event Planning Process",
+        "description": "Our event planning process is designed to ensure every event is a success, leaving no detail overlooked. We have designed our event planning process to ensure every event is a success, with no detail overlooked.",
+        "steps": [
+            {
+                "title": "Receiving the Brief",
+                "subtitle": "Where your vision begins.",
+                "description": "We listen closely; understanding your goals, brand tone, and the story you want to tell. Every detail matters, because this is where the magic starts."
+            },
+            {
+                "title": "Event Ideation & Concept Development",
+                "subtitle": "Where ideas take shape.",
+                "description": "We turn your brief into bold concepts; themes, formats, and moments shaped around your audience and the impression you want to leave."
+            },
+            {
+                "title": "Planning & Logistics",
+                "subtitle": "Where the plan comes together.",
+                "description": "Venues, suppliers, timelines, and budgets are mapped into one clear plan, so every moving part is accounted for long before event day."
+            },
+            {
+                "title": "Production & Technology",
+                "subtitle": "Where the experience is built.",
+                "description": "Our in-house team builds the sets, content, sound, light, and visuals, engineering every element to work together as one seamless experience."
+            },
+            {
+                "title": "Rehearsal & Show Day",
+                "subtitle": "Where everything comes to life.",
+                "description": "We rehearse every cue, then run the show on the day; managing the stage, the crew, and your guests so you can stay present in the moment."
+            },
+            {
+                "title": "Wrap-Up & Review",
+                "subtitle": "Where every event leaves its mark.",
+                "description": "After the applause, we handle the breakdown and review the results with you, capturing what worked and the insights for what comes next."
+            }
+        ]
+    },
+    "blogs": {
+        "title": "Explore Blogs",
+        "action": {
+            "label": "View All Blogs",
+            "href": "#"
+        },
+        "posts": [
+            {
+                "id": "designing-events-for-every-sense",
+                "title": "Designing Events That Engage Every Sense",
+                "excerpt": "How sound, light, scent, and space work together to turn a gathering into a memory.",
+                "tag": "#events",
+                "image": {
+                    "src": "/images/services/1.png",
+                    "width": 760,
+                    "height": 1040,
+                    "alt": "Guest wearing headphones under warm red stage lighting"
+                },
+                "href": "#"
+            },
+            {
+                "id": "inside-live-show-production",
+                "title": "Inside the Production Behind a Live Show",
+                "excerpt": "From load-in to the final cue: the crews and timelines that keep a stage running.",
+                "tag": "#production",
+                "image": {
+                    "src": "/images/services/3.png",
+                    "width": 748,
+                    "height": 1040,
+                    "alt": "Camera operator filming under purple studio lights"
+                },
+                "href": "#"
+            },
+            {
+                "id": "projection-mapping-live-events",
+                "title": "Projection Mapping for Live Events",
+                "excerpt": "How projected visuals reshape a room, and what to plan before the first rehearsal.",
+                "tag": "#eventtechnology",
+                "image": {
+                    "src": "/images/services/2.png",
+                    "width": 760,
+                    "height": 1040,
+                    "alt": "Close-up of a projector zoom lens"
+                },
+                "href": "#"
+            },
+            {
+                "id": "brand-activations-people-join",
+                "title": "Brand Activations People Want to Join",
+                "excerpt": "Why the best activations invite guests to take part instead of simply watching.",
+                "tag": "#experiences",
+                "image": {
+                    "src": "/images/services/1.png",
+                    "width": 760,
+                    "height": 1040,
+                    "alt": "Guest wearing headphones under warm red stage lighting"
+                },
+                "href": "#"
+            },
+            {
+                "id": "writing-an-event-brief",
+                "title": "Writing an Event Brief That Works",
+                "excerpt": "The questions to answer early so every idea, budget, and timeline points one way.",
+                "tag": "#eventplanning",
+                "image": {
+                    "src": "/images/services/3.png",
+                    "width": 748,
+                    "height": 1040,
+                    "alt": "Camera operator filming under purple studio lights"
+                },
+                "href": "#"
+            },
+            {
+                "id": "planning-sustainable-events",
+                "title": "Planning More Sustainable Events",
+                "excerpt": "Practical choices in materials, power, and logistics that reduce an event's footprint.",
+                "tag": "#sustainability",
+                "image": {
+                    "src": "/images/services/2.png",
+                    "width": 760,
+                    "height": 1040,
+                    "alt": "Close-up of a projector zoom lens"
+                },
+                "href": "#"
+            }
+        ]
+    },
+    "contact": {
+        "eyebrow": "Contact Us Today!",
+        "title": "Let’s create something extraordinary",
+        "details": [
+            {
+                "icon": "location",
+                "title": "Dubai, UAE",
+                "lines": [
+                    {
+                        "text": "Al Jaddaf Drydocks, Dubai, UAE"
+                    }
+                ]
+            },
+            {
+                "icon": "phone",
+                "title": "Contact",
+                "lines": [
+                    {
+                        "label": "Phone",
+                        "text": "+971 4 326 7224",
+                        "href": "tel:+97143267224"
+                    },
+                    {
+                        "label": "Mail",
+                        "text": "info@skybridgeworld.com",
+                        "href": "mailto:info@skybridgeworld.com"
+                    }
+                ]
+            }
+        ],
+        "action": {
+            "label": "Contact Us",
+            "href": "#"
+        }
     }
 }

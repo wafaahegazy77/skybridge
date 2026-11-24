@@ -9,11 +9,13 @@ type RoundedButtonProps = {
     /** glass = Navbar CTA, primary = green fill, white = white fill (Figma "Button Rounded"). */
     variant: RoundedButtonVariant;
     className?: string;
+    /** Accessible name when the visible label alone is ambiguous (e.g. repeated "Learn More" links). */
+    ariaLabel?: string;
 };
 
 // Figma "Button Rounded" (Medium, icon right). Built on the existing `.butn` system and keeps
 // its text-slide (`hvr-txt-trans`) and scale (`hvr-scale`) animations.
-export default function RoundedButton({ href, label, variant, className }: RoundedButtonProps) {
+export default function RoundedButton({ href, label, variant, className, ariaLabel }: RoundedButtonProps) {
     const classes = [
         "butn",
         `${variant}_butn`,
@@ -27,7 +29,7 @@ export default function RoundedButton({ href, label, variant, className }: Round
         .join(" ");
 
     return (
-        <Link href={href} className={classes}>
+        <Link href={href} className={classes} aria-label={ariaLabel}>
             <div className="txt" data-text={label}>
                 <span>{label}</span>
             </div>

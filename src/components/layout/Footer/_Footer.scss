@@ -1,11 +1,391 @@
-.footer_section {
+// Site footer (Figma: Home, y 9661–10202 on the 1512 frame, under the "call action" card).
+// Three columns on the 1206 grid — logo + description (x 0), "Top Links" (x 515), newsletter + social
+// links (x 822, 384 wide) — and, 380px below their top, the Skybridge wordmark across the page, fading
+// into the background (Figma "footer": wordmark + gradient).
+
+.site-footer {
     position: relative;
+    overflow: hidden;
+    padding-top: 105px; // the card ends at y 9556; the newsletter row starts at 9661
+    color: #fff;
 
+    &__main {
+        display: grid;
+        grid-template-columns: 515px minmax(0, 1fr) 384px;
+        align-items: start;
+        min-height: 380px; // wordmark top (y 10041) − columns top (y 9661)
+        max-width: 1206px;
+        margin: 0 auto;
+    }
 
+    // -----------------------------------------------------------------------------------------
+    // Logo + description
+    // -----------------------------------------------------------------------------------------
 
+    &__about {
+        max-width: 382px;
+        margin-top: 6px; // Figma: logo top 6px below the newsletter row
+    }
+
+    &__brand-link {
+        display: block;
+        width: fit-content;
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 4px;
+        }
+    }
+
+    // Figma "logo 2": 160 × 113.
+    &__logo {
+        display: block;
+        width: 160px;
+        height: auto;
+    }
+
+    // Figma: Poppins Regular 14, line height auto (21), #A4A4A4; 35px below the logo.
+    &__description {
+        margin: 35px 0 0;
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 21px;
+        color: #a4a4a4;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Top Links (Figma "Company"). As laid out in Figma, the first link starts 63px below the heading's
+    // top and the links are 36px apart (24px lines, 12px gaps).
+    // -----------------------------------------------------------------------------------------
+
+    &__links {
+        margin-top: 6px;
+    }
+
+    // Figma: Poppins Regular 18 / 28, uppercase, #A4A4A4.
+    &__heading {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 28px;
+        text-transform: uppercase;
+        color: #a4a4a4;
+    }
+
+    // Spacing as padding: the global `body ul:not(.list-styled)` rule resets list margins.
+    &__list {
+        display: grid;
+        gap: 12px;
+        padding: 35px 0 0;
+        list-style: none;
+    }
+
+    // Figma: Bagoss Regular 16 / 24, white. Hover: the site-wide link green.
+    &__link {
+        display: block;
+        width: fit-content;
+        font-family: var(--font-heading);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+        color: #fff;
+        text-decoration: none;
+        transition: color 0.25s ease;
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 3px;
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Newsletter (Figma "Group 131")
+    // -----------------------------------------------------------------------------------------
+
+    // Envelope (24px) and title, 8px apart.
+    &__newsletter-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 24px;
+    }
+
+    &__newsletter-icon {
+        flex: none;
+        color: #fff;
+    }
+
+    // Figma: Bagoss Regular 14, white.
+    &__newsletter-title {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+        color: #fff;
+    }
+
+    // Figma "Frame 26": 384 × 46 pill, 1px white 25% border, background blur 12.3 (CSS ~6px), 19.6px
+    // left padding; the round submit button 9.6px from the right end. 13px below the title row.
+    &__form {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        height: 46px;
+        margin-top: 13px;
+        padding: 0 9.6px 0 19.6px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 1000px;
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        transition: border-color 0.25s ease;
+
+        &:focus-within {
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+    }
+
+    // Figma: Bagoss Regular 13.08, placeholder #949494.
+    &__input {
+        flex: 1;
+        min-width: 0;
+        height: 100%;
+        padding: 0;
+        font-family: var(--font-heading);
+        font-size: 13.08px;
+        font-weight: 400;
+        color: #fff;
+        background: transparent;
+        border: 0;
+        outline: none;
+
+        &::placeholder {
+            color: #949494;
+            opacity: 1;
+        }
+    }
+
+    // Figma "Frame 27": 29.4px white circle, 19.6px arrow in #A4A4A4.
+    // Hover (not in Figma): Skybridge green with a white arrow.
+    &__submit {
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 29.4px;
+        height: 29.4px;
+        padding: 0;
+        color: #a4a4a4;
+        background-color: #fff;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        transition:
+            background-color 0.25s ease,
+            color 0.25s ease;
+
+        svg {
+            width: 19.6px;
+            height: 19.6px;
+        }
+
+        @media (hover: hover) {
+            &:not(:disabled):hover {
+                color: #fff;
+                background-color: var(--primary);
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        &:disabled {
+            cursor: progress;
+            opacity: 0.6;
+        }
+    }
+
+    // Figma: Poppins Regular 14 / 20, #808080, 17px below the pill.
+    &__consent {
+        margin: 17px 0 0;
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        color: #808080;
+    }
+
+    // Submit feedback (not in Figma); empty until there is a message.
+    &__status {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 14px;
+        line-height: 20px;
+
+        &:empty {
+            display: none;
+        }
+
+        &--success {
+            margin-top: 8px;
+            color: var(--primary);
+        }
+
+        &--error {
+            margin-top: 8px;
+            color: #ff6b6b;
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Social links (Figma "social icon circle": four 48px circles, 6px apart)
+    // -----------------------------------------------------------------------------------------
+
+    // Figma: 111px below the consent line (padding: list margins are reset globally, see above).
+    &__social {
+        display: flex;
+        gap: 6px;
+        padding: 111px 0 0;
+        list-style: none;
+    }
+
+    // Figma "Rectangle 1": transparent, 1px white 15% border, background blur 10 (CSS 5px); white 17px icon.
+    // Hover (not in Figma): green border and icon (the icon follows the site-wide link green).
+    &__social-link {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+        transition:
+            border-color 0.25s ease,
+            color 0.25s ease;
+
+        &:hover {
+            border-color: var(--primary);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 3px;
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Wordmark (Figma "logo-txt 3": 1492 wide, 10px from each side of the 1512 frame, 161px high)
+    // -----------------------------------------------------------------------------------------
+
+    &__wordmark {
+        position: relative;
+        padding: 0 10px;
+
+        // Figma "Rectangle 161123885": from 30px above the wordmark to the page bottom, #1A1A1A
+        // fading from 0% (top) to 100% (bottom).
+        &::after {
+            content: "";
+            position: absolute;
+            inset: -30px 0 0;
+            background: linear-gradient(to bottom, rgba(26, 26, 26, 0), #1a1a1a);
+            pointer-events: none;
+        }
+    }
+
+    &__wordmark-img {
+        display: block;
+        width: 100%;
+        height: auto;
+        user-select: none;
+    }
 }
 
-@media screen and (max-width: 991px) {
+@media (prefers-reduced-motion: reduce) {
+    .site-footer__link,
+    .site-footer__form,
+    .site-footer__submit,
+    .site-footer__social-link {
+        transition: none;
+    }
+}
 
+// ---------------------------------------------------------------------------------------------
+// Responsive (no Figma: agreed adaptations)
+// ---------------------------------------------------------------------------------------------
 
+// Small laptops: the three columns share the narrower grid.
+@media (max-width: 1199.98px) {
+    .site-footer__main {
+        grid-template-columns: minmax(0, 382px) auto minmax(0, 384px);
+        justify-content: space-between;
+        column-gap: 40px;
+    }
+}
+
+// Tablets: logo + description on top, links and newsletter side by side below.
+@media (max-width: 991.98px) {
+    .site-footer {
+        padding-top: 88px;
+    }
+
+    .site-footer__main {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        row-gap: 56px;
+        min-height: 0;
+        margin-bottom: 72px;
+    }
+
+    .site-footer__about {
+        grid-column: 1 / -1;
+        max-width: 480px;
+        margin-top: 0;
+    }
+
+    .site-footer__links {
+        margin-top: 0;
+    }
+
+    .site-footer__social {
+        padding-top: 48px;
+    }
+}
+
+// Phones: one column.
+@media (max-width: 767.98px) {
+    .site-footer {
+        padding-top: 72px;
+    }
+
+    .site-footer__main {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 48px;
+        margin-bottom: 56px;
+    }
+
+    .site-footer__logo {
+        width: 128px;
+    }
+
+    .site-footer__description {
+        margin-top: 28px;
+    }
+
+    .site-footer__list {
+        padding-top: 24px;
+    }
+
+    // 16px so iOS Safari does not zoom the page when the field gets focus.
+    .site-footer__input {
+        font-size: 16px;
+    }
+
+    .site-footer__social {
+        padding-top: 40px;
+    }
 }

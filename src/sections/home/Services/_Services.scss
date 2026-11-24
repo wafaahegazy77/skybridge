@@ -1,0 +1,587 @@
+// Home – Services section (Figma "services": panel 1359 × 1017 at x 153 / y 1755 on the 1512 frame).
+// The panel starts on the Intro frame's left edge and bleeds into the right edge of the screen,
+// together with the card slider. All positions below are Figma values relative to the panel.
+
+.services {
+    --services-ease: cubic-bezier(0.65, 0, 0.35, 1);
+    --swiper-wrapper-transition-timing-function: var(--services-ease);
+
+    position: relative;
+    overflow-x: clip; // the panel and the slider bleed past the right edge, the page never scrolls sideways
+    color: #fff;
+
+    // Pre-state: hidden until useServicesAnimation has applied its initial GSAP states.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-services-state="pending"] .services__reveal {
+        visibility: hidden;
+        animation: services-failsafe 0s linear 3s forwards;
+    }
+
+    // Figma "Ellipse 1": 530 × 609 at x -114, y 2123, #2DD975 at 20%, blur 300 → radial gradient (ellipse + 2 × 300).
+    &__glow {
+        position: absolute;
+        top: 68px;
+        left: calc(50% - 1170px);
+        width: 1130px;
+        height: 1209px;
+        border-radius: 50%;
+        background: radial-gradient(
+            closest-side,
+            rgba(45, 217, 117, 0.17),
+            rgba(45, 217, 117, 0.14) 35%,
+            rgba(45, 217, 117, 0.08) 60%,
+            rgba(45, 217, 117, 0.03) 80%,
+            rgba(45, 217, 117, 0)
+        );
+        pointer-events: none;
+    }
+
+    &__panel {
+        position: relative;
+        isolation: isolate; // own stacking context, so the background layer can sit below everything
+        margin-left: max(24px, calc(50% - 603px)); // 153px on 1512 (aligned with the Intro frame)
+        padding: 138px 0 159px; // cards end at y 858 → panel height 1017 on 1512
+    }
+
+    // Figma "Rectangle 9": #1A1A1A, left corners 30px; the right side runs into the screen edge.
+    // A separate, empty layer, so its reveal never repaints the content above it.
+    &__panel-bg {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background-color: #1a1a1a;
+        border-radius: 30px 0 0 30px;
+        pointer-events: none;
+    }
+
+    // Figma "pat 1" (142 × 151) and "pat 2" (142 × 98, top 65% of the same image), both at 40%.
+    &__pattern {
+        position: absolute;
+        width: 142px;
+        overflow: hidden;
+        opacity: 0.4;
+        pointer-events: none;
+
+        &--top {
+            top: 109px;
+            left: 1258px;
+            height: 151px;
+        }
+
+        &--bottom {
+            bottom: 0; // Figma: y 919 → touches the panel bottom (1017)
+            left: 243px;
+            height: 98px;
+        }
+    }
+
+    &__pattern-img {
+        display: block;
+        width: 142px;
+        height: auto;
+    }
+
+    // ---------- Heading (Figma "Group 17" at x 157 / y 138) ----------
+    &__header {
+        position: relative;
+        margin-left: 157px;
+    }
+
+    &__title-wrap {
+        position: relative;
+        width: fit-content;
+    }
+
+    // Figma: Bagoss Medium 48, line 54, uppercase, white.
+    &__title,
+    &__title-outline {
+        display: block;
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    &__title {
+        color: #fff;
+    }
+
+    // Green contour copy of the heading, only shown during its reveal.
+    &__title-outline {
+        position: absolute;
+        inset: 0;
+        color: transparent;
+        -webkit-text-stroke: 1px var(--primary);
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    // Figma: Poppins Regular 24, line 36, #A4A4A4, at x 165 / y 209 (8px right of the heading).
+    &__subtitle {
+        margin: 17px 0 0 8px;
+        font-family: var(--font-body);
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 36px;
+        color: #a4a4a4;
+    }
+
+    // ---------- Controls + slider row (cards at y 338) ----------
+    &__body {
+        display: flex;
+        gap: 53px; // controls end at x 112, cards start at x 165
+        margin: 93px 0 0 52px;
+    }
+
+    // Same height as the cards (stretched by the row): counter top-aligned, arrows bottom-aligned.
+    &__controls {
+        display: flex;
+        flex: 0 0 60px;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    // Figma "Group 13": 60 × 60, white 5%; "1 : 4" Bagoss Medium 20 at (13, 17).
+    &__counter {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.28em;
+        width: 60px;
+        height: 60px;
+        padding: 17px 0 0 13px;
+        font-family: var(--font-heading);
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 22px;
+        background-color: rgba(255, 255, 255, 0.05);
+
+        span {
+            font-family: inherit;
+        }
+    }
+
+    // Masked slot for the rolling number.
+    &__counter-current {
+        display: inline-grid;
+        overflow: hidden;
+    }
+
+    &__counter-num {
+        grid-area: 1 / 1;
+    }
+
+    // Figma "Group 12" (←) above "Group 11" (→), 60 × 60, 7px apart, bottom-aligned with the cards.
+    &__nav {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    // Both arrows share one dark style (Figma "Group 11": white 5% on the dark panel, white arrow);
+    // on hover only the arrow turns Skybridge green.
+    &__nav-btn {
+        display: grid;
+        place-items: center;
+        width: 60px;
+        height: 60px;
+        padding: 0;
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 0;
+        border-radius: 0;
+        cursor: pointer;
+        transition:
+            color 0.3s ease,
+            opacity 0.3s ease;
+
+        @media (hover: hover) {
+            &:hover {
+                background-color: var(--primary); 
+                color: #fff;
+            }
+        }
+
+        &--prev {
+            .services__nav-icon {
+                transform: scaleX(-1);
+            }
+
+        }
+
+
+
+
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 3px;
+        }
+
+        // Swiper's disabled state (not reached while the slider loops; kept as a safeguard).
+        &.is-disabled {
+            opacity: 0.35;
+            cursor: default;
+            pointer-events: none;
+        }
+    }
+
+    &__nav-icon {
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    // ---------- Slider ----------
+    // Desktop: from the first card (x 165) to 6px past the screen edge, exactly like Figma at 1512
+    // (3rd card ends at x 1518). Swiper centers the active card in this box, so the active card is
+    // always the one in the middle of the visible area.
+    &__slider {
+        flex: none;
+        width: calc(100% - 107px); // 100% of the row − controls 60 − gap 53 + 6
+        margin: 0;
+    }
+
+    // Desktop: three cards + two 30px gaps fill the slider box, as in Figma (380 × 520 at 1512).
+    // Between 1200 and 1511 the cards scale down with it, so the first card always starts on the
+    // heading line; on very wide screens they stop growing at 460px.
+    &__slide {
+        width: min(460px, calc((100% - 60px) / 3));
+        height: auto;
+        aspect-ratio: 380 / 520;
+    }
+
+    // Figma "Rectangle 10": 380 × 520, radius 30, photo fill.
+    &__card {
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        background-color: #121515;
+        border-radius: 30px;
+        isolation: isolate;
+        // Card-relative sizing (cqi = 1% of the card width): the Figma values hold at 380px and
+        // scale down proportionally on narrower cards, so long titles never overflow.
+        container-type: inline-size;
+
+        // Active card only: soft top gradient that keeps the revealed copy readable on bright photos.
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: linear-gradient(180deg, rgba(8, 10, 10, 0.55) 0%, rgba(8, 10, 10, 0) 62%);
+            opacity: 0;
+            transition: opacity 0.6s var(--services-ease);
+            pointer-events: none;
+        }
+    }
+
+    // Depth layer: wider than the card so the photo can shift with the slider (see useServicesSlider).
+    &__card-media {
+        position: absolute;
+        inset: 0 -48px;
+        transition-property: transform;
+        transition-timing-function: var(--services-ease);
+        will-change: transform;
+    }
+
+    // Emphasis layer: side cards sit slightly deeper (zoomed in); the active card settles to 1.
+    &__card-zoom {
+        position: absolute;
+        inset: 0;
+        transform: scale(1.06);
+        transition: transform 0.9s var(--services-ease);
+        will-change: transform; // stays on its own layer: (de)activation never repaints the photo
+    }
+
+    &__card-img {
+        object-fit: cover;
+    }
+
+    // Side cards are toned down a little so the center card reads as active (opacity only).
+    &__card-shade {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background-color: rgba(10, 12, 12, 0.32);
+        transition: opacity 0.6s var(--services-ease);
+        pointer-events: none;
+    }
+
+    // Figma: title at (35, 74), 309 wide; Bagoss Medium 32, line 36, white (all on a 380px card).
+    &__card-body {
+        position: absolute;
+        top: clamp(24px, 19.47cqi, 74px);
+        left: clamp(22px, 9.21cqi, 35px);
+        z-index: 2;
+        width: 81.3cqi; // 309px on a 380px card
+    }
+
+    &__card-title {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: clamp(22px, 8.42cqi, 32px);
+        font-weight: 500;
+        line-height: 1.125;
+        color: #fff;
+    }
+
+    // Supporting copy: revealed on the active card only (wipes down out of a mask).
+    &__card-text {
+        max-width: 290px;
+        margin: clamp(10px, 4.2cqi, 16px) 0 0;
+        font-family: var(--font-body);
+        font-size: clamp(14px, 4.21cqi, 16px);
+        font-weight: 400;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.85);
+        clip-path: inset(0% 0% 100% 0%);
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+            clip-path 0.55s var(--services-ease),
+            opacity 0.4s ease,
+            transform 0.55s var(--services-ease);
+    }
+
+    // Figma: button at (35, 420), 150 × 46 → 54px above the card bottom.
+    &__card-action {
+        position: absolute;
+        bottom: clamp(22px, 14.21cqi, 54px);
+        left: clamp(22px, 9.21cqi, 35px);
+        z-index: 2;
+    }
+
+    // ---------- Active (center) card ----------
+    &__slide.is-active {
+        .services__card-zoom {
+            transform: scale(1);
+        }
+
+        .services__card::before {
+            opacity: 1;
+        }
+
+        .services__card-shade {
+            opacity: 0;
+        }
+
+        .services__card-text {
+            clip-path: inset(0% 0% 0% 0%);
+            opacity: 1;
+            transform: none;
+            transition-delay: 0.15s;
+        }
+
+        // Button switches to a dark fill with a white label and arrow (Figma: the middle card's button).
+        .butn.rounded_butn.white_butn {
+            color: #fff;
+            background-color: rgba(18, 20, 20, 0.88);
+            border-color: rgba(255, 255, 255, 0.16);
+
+            &.hvr-txt-trans .txt::after {
+                color: #fff;
+            }
+
+            &:hover {
+                background-color: transparent;
+                border-color: #fff;
+            }
+        }
+    }
+
+    // Fill change only (the existing button transitions are kept for hover).
+    .services__button.butn.rounded_butn {
+        transition:
+            transform 0.3s ease,
+            border-color 0.3s ease,
+            box-shadow 0.25s ease,
+            color 0.35s ease,
+            background-color 0.45s var(--services-ease);
+    }
+}
+
+@keyframes services-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .services {
+        &[data-services-state="pending"] .services__reveal {
+            visibility: visible;
+            animation: none;
+        }
+
+        .services__card-media,
+        .services__card-zoom,
+        .services__card::before,
+        .services__card-shade,
+        .services__card-text,
+        .services__nav-btn,
+        .services__nav-icon {
+            transition: none;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------------------------
+
+// Laptop: the glow follows the viewport proportionally (Figma center at 9.99% of 1512).
+@media (max-width: 1399.98px) {
+    .services__glow {
+        left: calc(9.99% - 565px);
+    }
+}
+
+// Tablet: the panel keeps its right-edge bleed; the slider spans the whole panel so the active card
+// sits in the middle with both neighbours peeking; counter and arrows move into a row below.
+@media (max-width: 1199.98px) {
+    .services__panel {
+        margin-left: 16px;
+        padding: 72px 0 64px;
+    }
+
+    .services__pattern {
+        &--top {
+            top: 40px;
+            right: 24px;
+            left: auto;
+            width: 106px;
+            height: 113px;
+        }
+
+        &--bottom {
+            display: none;
+        }
+    }
+
+    .services__pattern-img {
+        width: 106px;
+    }
+
+    .services__header {
+        margin-left: 40px;
+    }
+
+    .services__title,
+    .services__title-outline {
+        font-size: 40px;
+        line-height: 46px;
+    }
+
+    .services__subtitle {
+        margin: 12px 40px 0 0;
+        font-size: 20px;
+        line-height: 30px;
+    }
+
+    .services__body {
+        flex-direction: column;
+        gap: 32px;
+        margin: 48px 0 0;
+    }
+
+    .services__slider {
+        order: 1;
+        width: 100%;
+    }
+
+    .services__controls {
+        flex: none;
+        flex-direction: row;
+        align-items: center;
+        order: 2;
+        height: auto;
+        padding: 0 40px;
+    }
+
+    .services__nav {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .services__slide {
+        width: 320px;
+    }
+}
+
+// Mobile: one card in focus (min 260px wide) with slim previews of its neighbours.
+@media (max-width: 767.98px) {
+    .services__glow {
+        top: 120px;
+        left: calc(10% - 330px);
+        width: 660px;
+        height: 700px;
+    }
+
+    .services__panel {
+        margin-left: 12px;
+        padding: 56px 0 48px;
+    }
+
+    .services__panel-bg {
+        border-radius: 24px 0 0 24px;
+    }
+
+    .services__pattern--top {
+        top: 24px;
+        right: 16px;
+        width: 72px;
+        height: 77px;
+    }
+
+    .services__pattern-img {
+        width: 72px;
+    }
+
+    .services__header {
+        margin-left: 24px;
+    }
+
+    .services__title,
+    .services__title-outline {
+        font-size: 32px;
+        line-height: 38px;
+    }
+
+    .services__subtitle {
+        margin: 10px 24px 0 0;
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    .services__body {
+        gap: 28px;
+        margin-top: 36px;
+    }
+
+    .services__slide {
+        width: max(260px, min(300px, calc(100vw - 96px)));
+    }
+
+    .services__card {
+        border-radius: 24px;
+    }
+
+    .services__controls {
+        padding: 0 24px;
+    }
+
+    .services__counter {
+        width: 52px;
+        height: 52px;
+        padding: 15px 0 0 10px;
+        font-size: 18px;
+        line-height: 20px;
+    }
+
+    .services__nav-btn {
+        width: 52px;
+        height: 52px;
+    }
+}

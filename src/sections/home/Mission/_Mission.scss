@@ -1,0 +1,495 @@
+// Home – Mission & Values section (Figma "about": 1512 × 1120 at y 3444 on the 1512 frame).
+// Title centered at y 140; image 382 × 580 and content card 794 × 581 side by side (30px apart,
+// 1206px in total, aligned with the Intro frame); vertical tab strip inside the card's left edge.
+
+.mission {
+    --mission-ease: cubic-bezier(0.65, 0, 0.35, 1);
+
+    position: relative;
+    padding: 140px 0 165px; // card ends at y 955 of 1120
+    overflow-x: clip; // the lights never cause horizontal scrolling
+    color: #fff;
+
+    // Pre-state: hidden until useMissionAnimation has applied its initial GSAP states.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-mission-state="pending"] .mission__reveal {
+        visibility: hidden;
+        animation: mission-failsafe 0s linear 3s forwards;
+    }
+
+    // Figma: the section is a full-width panel with 30px corners. Its 95% #1A1F1F fill matches the page
+    // background, so what shows of it is the smoke texture (5%) and the two lights clipped to its corners.
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        border-radius: 30px;
+        pointer-events: none;
+    }
+
+    // Figma "giphy-1" (Rectangle 19: 1509 × 1111 at x 3, y 9) under the 95% fill → seen at 5%.
+    // The 125px source is stretched over the panel exactly as Figma does (image fill, "Fill").
+    &__texture {
+        position: absolute;
+        top: 9px;
+        right: 0;
+        bottom: 0;
+        left: 3px;
+        border-radius: 30px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        opacity: 0.05;
+    }
+
+    // Figma ellipses with blur 300, rendered as radial gradients (ellipse + 2 × 300) instead of a blur filter
+    // (same technique as the Intro). Colors include the 95% opacity of the mask they are clipped by.
+    &__glow {
+        position: absolute;
+        width: 1084px;
+        height: 1510px;
+        border-radius: 50%;
+        will-change: transform; // scroll-linked drift on its own layer
+
+        // Figma "Ellipse 4": 484 × 910 at x 0, y 210, #2DD975 at 40%
+        &--green {
+            top: -90px;
+            left: -300px;
+            background: radial-gradient(
+                closest-side,
+                rgba(45, 217, 117, 0.323),
+                rgba(45, 217, 117, 0.266) 35%,
+                rgba(45, 217, 117, 0.152) 60%,
+                rgba(45, 217, 117, 0.057) 80%,
+                rgba(45, 217, 117, 0)
+            );
+        }
+
+        // Figma "Ellipse 5": 484 × 910 at x 1028, y 0, #5B2EE0 at 35%
+        &--purple {
+            top: -300px;
+            right: -300px;
+            background: radial-gradient(
+                closest-side,
+                rgba(91, 46, 224, 0.285),
+                rgba(91, 46, 224, 0.233) 35%,
+                rgba(91, 46, 224, 0.133) 60%,
+                rgba(91, 46, 224, 0.048) 80%,
+                rgba(91, 46, 224, 0)
+            );
+        }
+    }
+
+    // Figma: Bagoss Medium 48, line height auto (54), centered, uppercase, white. Two lines, 588px box.
+    &__title {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        text-align: center;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    // Each line is as wide as its text, so the light band sweeps exactly across the letters.
+    &__title-line {
+        display: block;
+        width: fit-content;
+        margin: 0 auto;
+    }
+
+    // Light band (entrance only, class added by useMissionAnimation): the text is painted with a gradient
+    // three times its width — lit white, a soft pale-green band, then unlit. Moving the gradient from
+    // 100% to 0% carries the band from left to right and leaves the line plain white.
+    &__title-line--sweep {
+        color: transparent;
+        background-image: linear-gradient(
+            100deg,
+            #fff 0%,
+            #fff 42%,
+            #e3fbec 47%,
+            rgba(255, 255, 255, 0.35) 51%,
+            rgba(255, 255, 255, 0) 56%
+        );
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    // Figma: image at y 375 and card at y 374 → 126px below the title box (y 248).
+    // 382 : 794 columns with a 30px gap (1206px in total), scaling together below 1206px.
+    &__stage {
+        display: grid;
+        grid-template-columns: 382fr 794fr;
+        column-gap: 30px;
+        align-items: start;
+        max-width: 1206px;
+        margin: 126px auto 0;
+    }
+
+    // Figma "Rectangle 161123886": 382 × 580, 30px corners, image fill (cover, centered).
+    &__media {
+        position: relative;
+        margin-top: 1px;
+        aspect-ratio: 382 / 580;
+        overflow: hidden;
+        border-radius: 30px;
+        background-color: #1a1a1a;
+    }
+
+    &__img {
+        object-fit: cover;
+        object-position: center;
+        will-change: transform; // settles from 1.15× during the entrance
+    }
+
+    &__card-wrap {
+        position: relative; // the tab strip is positioned on the card's left edge
+    }
+
+    // Figma "Rectangle 19": 794 × 581, #1A1F1F, 1px inside stroke white 15%, 30px corners.
+    // Text and button start 138px from the left edge (137px + the 1px border): the 52px tab strip plus
+    // 85px. The gaps are in % of the card width, so the proportions hold when the card scales
+    // (85 / 794, 57 / 794).
+    &__card {
+        position: relative;
+        isolation: isolate; // the spotlight layer sits above the fill and below the content
+        padding: 95px 7.18% 98px calc(52px + 10.7%); // text at y 96; button ends at y 482 → 99px to the bottom
+        background-color: #1a1f1f;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 30px;
+    }
+
+    // Restrained light following the cursor (desktop only, enabled by useMissionAnimation).
+    &__spotlight {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        background: radial-gradient(
+            260px circle at var(--mission-spot-x, 50%) var(--mission-spot-y, 50%),
+            rgba(255, 255, 255, 0.045),
+            rgba(45, 217, 117, 0.025) 45%,
+            rgba(45, 217, 117, 0) 70%
+        );
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+    }
+
+    // Both panels share one grid cell: the area always has the height of the taller panel, so
+    // switching tabs never changes the card height (see MissionTabs).
+    &__panels {
+        display: grid;
+    }
+
+    &__panel {
+        grid-area: 1 / 1;
+        min-width: 0;
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 8px;
+            border-radius: 4px;
+        }
+
+        &[data-active="false"] {
+            visibility: hidden;
+            pointer-events: none;
+        }
+    }
+
+    // Figma: a bulleted list, Poppins Regular 18 / 27 #A4A4A4; bullet at x 13, text at x 33;
+    // one empty line (27px) between the statements.
+    &__list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    &__item {
+        // Lighting state of the lead-in and its bullet (1 = on). Animated by GSAP, 1 by default.
+        --mission-lit: 1;
+        --mission-glow: 0;
+
+        position: relative;
+        padding-left: 33px;
+        font-family: var(--font-body);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 27px;
+        color: #a4a4a4;
+
+        & + & {
+            margin-top: 27px;
+        }
+
+        // Figma bullet: "•" in the lead-in style (Bagoss Medium 22, white).
+        &::before {
+            content: "•";
+            position: absolute;
+            top: 0;
+            left: 13px;
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 500;
+            line-height: 27px;
+            color: rgba(255, 255, 255, var(--mission-lit));
+        }
+    }
+
+    // Figma: Bagoss Medium 22, white (the opening words of each statement).
+    &__lead {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 22px;
+        font-weight: 500;
+        line-height: 1; // inline in a 27px line: a smaller box keeps the line at exactly 27px
+        color: rgba(255, 255, 255, var(--mission-lit));
+        text-shadow: 0 0 calc(var(--mission-glow) * 14px) rgba(255, 255, 255, calc(var(--mission-glow) * 0.35));
+    }
+
+    // Figma "Button Rounded" (Outline): 574 × 46 at y 436, #00F567 at 5%, 1px white 10% border,
+    // white Poppins label. Built on the shared "glass" variant, recolored for this section only.
+    &__action.butn.rounded_butn.glass_butn {
+        width: calc(100% - 24px); // 574 of the 598px text column
+        margin-top: 43px;
+        color: #fff;
+        background-color: rgba(0, 245, 103, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+
+        &:hover {
+            background-color: transparent;
+            border-color: #fff;
+        }
+    }
+
+    // Figma "Group 1000001768": two 250 × 52 tabs, rotated -90° → a 52 × 500 vertical strip inside the card's
+    // left edge, 41px below its top and 40px above its bottom (x 566–618, y 415–915 on the 1512 frame).
+    // OUR VALUES at the bottom, OUR MISSION above it (active); rounded 30px on the inner (right) side;
+    // labels read upwards. The strip follows the card height, each tab taking half of it.
+    &__tabs {
+        position: absolute;
+        top: 41px;
+        bottom: 40px;
+        left: 0;
+        z-index: 2; // above the card, as in Figma
+        display: flex;
+        flex-direction: column-reverse; // first tab (OUR VALUES) at the bottom
+        width: 52px;
+        isolation: isolate;
+    }
+
+    &__tab {
+        position: relative;
+        display: flex;
+        flex: 1 1 0;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 0;
+        padding: 12px 0;
+        font-family: var(--font-heading);
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 1;
+        text-transform: uppercase;
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 0;
+        border-radius: 0 30px 30px 0;
+        cursor: pointer;
+        transition: color 0.45s var(--mission-ease);
+
+        &[aria-selected="true"] {
+            color: #1a1a1a;
+            cursor: default;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 3px;
+        }
+    }
+
+    // Figma: the label is rotated with the group, so it reads from bottom to top.
+    &__tab-label {
+        white-space: nowrap;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+    }
+
+    // Figma active tab: white fill. Moves behind the labels to the selected tab
+    // (index 0 is the bottom tab, so it is shifted down by (count − 1 − index) tab heights).
+    &__tab-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        width: 100%;
+        height: calc(100% / var(--mission-tab-count, 2));
+        background-color: #fff;
+        border-radius: 0 30px 30px 0;
+        transform: translateY(calc((var(--mission-tab-count, 2) - 1 - var(--mission-tab-index, 1)) * 100%));
+        transition: transform 0.55s var(--mission-ease);
+    }
+}
+
+// The spotlight only exists for a mouse; the hook adds the pointer tracking on the same media query.
+@media (hover: hover) and (pointer: fine) {
+    .mission[data-mission-state="armed"] .mission__card:hover .mission__spotlight {
+        opacity: 1;
+    }
+}
+
+@keyframes mission-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mission {
+        &[data-mission-state="pending"] .mission__reveal {
+            visibility: visible;
+            animation: none;
+        }
+
+        .mission__tab,
+        .mission__tab-indicator {
+            transition: none;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------------------------
+
+// Laptop: the columns scale with the container; the card padding is reduced so the statements keep a
+// comfortable line length in the narrower card.
+@media (max-width: 1199.98px) {
+    .mission__stage {
+        column-gap: 24px;
+    }
+
+    .mission__card {
+        padding: 72px 6% 92px calc(52px + 6%);
+    }
+
+    .mission__action.butn.rounded_butn.glass_butn {
+        width: 100%;
+        margin-top: 36px;
+    }
+}
+
+// Tablet: image on top (the full landscape photo), card below with its tab strip.
+@media (max-width: 991.98px) {
+    .mission {
+        padding: 104px 0 120px;
+    }
+
+    .mission__title {
+        font-size: 40px;
+        line-height: 46px;
+    }
+
+    .mission__stage {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 24px;
+        max-width: 720px;
+        margin-top: 64px;
+    }
+
+    .mission__media {
+        margin-top: 0;
+        aspect-ratio: 3 / 2;
+    }
+
+    .mission__card {
+        padding: 56px 48px 72px calc(52px + 40px);
+    }
+
+    .mission__glow {
+        width: 760px;
+        height: 1060px;
+
+        &--green {
+            top: auto;
+            bottom: -120px;
+            left: -320px;
+        }
+
+        &--purple {
+            top: -260px;
+            right: -320px;
+        }
+    }
+}
+
+// Phones: compact type and spacing; the tab strip keeps its Figma width.
+@media (max-width: 767.98px) {
+    .mission {
+        padding: 80px 0 100px;
+    }
+
+    .mission__title {
+        font-size: 30px;
+        line-height: 36px;
+    }
+
+    .mission__stage {
+        margin-top: 44px;
+    }
+
+    .mission__card {
+        padding: 48px 20px 56px calc(52px + 20px);
+    }
+
+    .mission__item {
+        padding-left: 24px;
+        font-size: 16px;
+        line-height: 24px;
+
+        & + & {
+            margin-top: 20px;
+        }
+
+        &::before {
+            left: 4px;
+        }
+    }
+
+    .mission__lead {
+        font-size: 19px;
+    }
+
+    .mission__item::before {
+        font-size: 19px;
+        line-height: 24px;
+    }
+
+    .mission__action.butn.rounded_butn.glass_butn {
+        margin-top: 32px;
+    }
+
+    .mission__tab {
+        font-size: 16px;
+    }
+
+    .mission__glow {
+        width: 560px;
+        height: 780px;
+
+        &--green {
+            left: -300px;
+        }
+
+        &--purple {
+            right: -300px;
+        }
+    }
+}

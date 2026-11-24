@@ -1,0 +1,141 @@
+// Home – Showreel section (Figma: "show" 449 × 168 at x 153, triangle 524 × 524 at x 541, "reel" 358 × 168
+// at x 1004, all vertically centred on y 3071 of the 1512 frame).
+// The section is a full-screen stage: it is pinned while the camera flies into the triangle and the
+// showreel video is revealed through its opening (see useShowreelZoom).
+
+.showreel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    height: 100svh; // stable on mobile when the browser bars show/hide
+    overflow: hidden; // the zoomed triangle never causes horizontal scrolling
+    color: #fff;
+
+    // Full-screen video layer behind the composition. Hidden until the reveal; during the zoom it is cut
+    // to the triangle's opening as it appears on screen, then shown uncut once the opening covers the
+    // screen (see useShowreelZoom).
+    &__screen {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        overflow: hidden;
+        background-color: #0d1010;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    &__video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        will-change: transform;
+    }
+
+    // Figma: SHOW · triangle · REEL on one centred row. The triangle image has transparent margins,
+    // so it overlaps both words by 61px (602 → 541 and 1065 → 1004). Below 1512 everything scales
+    // with the viewport (values / 1512), keeping the exact proportions.
+    &__composition {
+        position: relative;
+        z-index: 2; // above the video layer
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    // Figma: Bagoss Medium 150, line height auto (168), uppercase, white.
+    &__word {
+        position: relative;
+        z-index: 1;
+        font-family: var(--font-heading);
+        font-size: min(150px, 9.92vw);
+        font-weight: 500;
+        line-height: 1.12;
+        text-transform: uppercase;
+        white-space: nowrap;
+        will-change: transform, opacity;
+    }
+
+    &__figure {
+        position: relative;
+        z-index: 2; // the triangle passes in front of the words as it grows
+        flex: none;
+        width: min(524px, 34.66vw);
+        aspect-ratio: 1;
+        margin: 0 calc(-1 * min(61px, 4.03vw));
+        will-change: transform; // one composited layer: the zoom never repaints the image
+    }
+
+    &__triangle {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    // Light inside the triangle, rising as the camera approaches (opacity only, starts invisible).
+    &__glow {
+        position: absolute;
+        top: 51%;
+        left: 53%;
+        width: 70%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(
+            closest-side,
+            rgba(45, 217, 117, 0.32),
+            rgba(45, 217, 117, 0.14) 45%,
+            rgba(45, 217, 117, 0)
+        );
+        opacity: 0;
+        visibility: hidden;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+}
+
+// Portrait tablets and phones: a vertical composition keeps the triangle large — SHOW top-left,
+// triangle in the middle, REEL bottom-right (the triangle's transparent top and bottom margins
+// overlap the words, as they overlap them sideways on desktop). Landscape phones keep the row.
+@media (max-width: 991.98px) and (orientation: portrait) {
+    .showreel__composition {
+        flex-direction: column;
+        width: 100%;
+        padding: 0 8vw;
+    }
+
+    .showreel__word {
+        font-size: 17vw;
+
+        &--start {
+            align-self: flex-start;
+        }
+
+        &--end {
+            align-self: flex-end;
+        }
+    }
+
+    .showreel__figure {
+        width: 70vw;
+        margin: -11vw 0;
+    }
+}
+
+@media (max-width: 575.98px) and (orientation: portrait) {
+    .showreel__composition {
+        padding: 0 6vw;
+    }
+
+    .showreel__word {
+        font-size: 22vw;
+    }
+
+    .showreel__figure {
+        width: 84vw;
+        margin: -13vw 0;
+    }
+}

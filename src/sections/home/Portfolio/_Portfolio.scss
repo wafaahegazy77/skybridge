@@ -1,0 +1,384 @@
+// Home – Portfolio & Case Studies (Figma "works": 1206 × 957 at x 153 / y 4838 on the 1512 frame).
+// Header centered at the top; case-study cards of 1206 × 629. In Figma the front card ("Group 21") sits
+// 328px below the header top and the card it covers ("Group 20") shows above it — that stacked state is
+// produced on scroll by usePortfolioAnimation (desktop), following the Mivon card-stacking interaction.
+
+.portfolio {
+    position: relative;
+    padding: 274px 0 177px; // Mission panel ends at y 4564 → header at 4838; cards end at 5795 → next section at 5972
+    color: #fff;
+
+    // Pre-state: hidden until usePortfolioAnimation has applied its initial GSAP states.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-portfolio-state="pending"] .portfolio__reveal {
+        visibility: hidden;
+        animation: portfolio-failsafe 0s linear 3s forwards;
+    }
+
+    &__inner {
+        max-width: 1206px;
+        margin: 0 auto;
+    }
+
+    // Figma "Group 17": eyebrow at y 0, title at y 56; the covered card starts 114px below the header.
+    &__header {
+        margin-bottom: 114px;
+        text-align: center;
+    }
+
+    // Figma: Poppins Regular 24, line height auto (36), #A4A4A4.
+    &__eyebrow {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 36px;
+        color: #a4a4a4;
+    }
+
+    // Figma: Bagoss Medium 48, line height auto (54), uppercase, white.
+    &__title {
+        margin: 20px 0 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    // Light band (entrance only, class added by usePortfolioAnimation): the text is painted with a gradient
+    // three times its width — lit white, a soft pale-green band, then unlit — that slides from 100% to 0%.
+    // Inline titles that wrap get the band line after line.
+    &__title-line--sweep {
+        color: transparent;
+        background-image: linear-gradient(
+            100deg,
+            #fff 0%,
+            #fff 42%,
+            #e3fbec 47%,
+            rgba(255, 255, 255, 0.35) 51%,
+            rgba(255, 255, 255, 0) 56%
+        );
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    // Cards in stacking order. Below 992px (or with reduced motion) they simply follow each other.
+    &__stack {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    // Pinned element (desktop): only positioned by the pin, never styled or transformed otherwise.
+    &__card {
+        position: relative;
+    }
+
+    // Figma "Rectangle 16": #1A1A1A, 1px inside stroke white 10%, 30px corners. The text group starts at
+    // x 62 / y 91, the image at x 666 / y 81 (485 × 458) → 55px right and 90px bottom margins.
+    // Padding includes the 1px border; horizontal values in % so the card scales with the container.
+    &__card-inner {
+        position: relative;
+        isolation: isolate; // glows sit above the fill and below the content
+        overflow: hidden;
+        padding: 80px 4.48% 89px 5.06%; // 54 / 1206 and 61 / 1206
+        background-color: #1a1a1a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        will-change: transform; // moves back (scale, offset, blur) when the next card covers it
+    }
+
+    // Figma ellipses with blur 300, rendered as radial gradients (ellipse + 2 × 300) instead of a blur filter.
+    &__card-glows {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    &__card-glow {
+        position: absolute;
+        height: 1098px;
+        border-radius: 50%;
+
+        // Figma "Ellipse 1": 891 × 498 at x 0, y 115, #2DD975 at 20%
+        &--green {
+            top: -185px;
+            left: -300px;
+            width: 1491px;
+            background: radial-gradient(
+                closest-side,
+                rgba(45, 217, 117, 0.17),
+                rgba(45, 217, 117, 0.14) 35%,
+                rgba(45, 217, 117, 0.08) 60%,
+                rgba(45, 217, 117, 0.03) 80%,
+                rgba(45, 217, 117, 0)
+            );
+        }
+
+        // Figma "Ellipse 2": 691 × 498 at x 515, y 0, #5B2EE0 at 25%
+        &--purple {
+            top: -300px;
+            right: -300px;
+            width: 1291px;
+            background: radial-gradient(
+                closest-side,
+                rgba(91, 46, 224, 0.213),
+                rgba(91, 46, 224, 0.175) 35%,
+                rgba(91, 46, 224, 0.1) 60%,
+                rgba(91, 46, 224, 0.038) 80%,
+                rgba(91, 46, 224, 0)
+            );
+        }
+    }
+
+    // Figma "Group 5": 35 × 35 marks, 1px white at 50%, 15px rounded outer corner. From the card edges:
+    // top-left 20 / 25, top-right 20 / 25, bottom-right 20 / 22, bottom-left 20 / 27.
+    &__corner {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        border: 0 solid rgba(255, 255, 255, 0.5);
+        pointer-events: none;
+
+        &--top-left {
+            top: 24px; // 25px from the outer edge, minus the 1px border
+            left: 19px;
+            border-top-width: 1px;
+            border-left-width: 1px;
+            border-top-left-radius: 15px;
+        }
+
+        &--top-right {
+            top: 24px;
+            right: 19px;
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-top-right-radius: 15px;
+        }
+
+        &--bottom-right {
+            right: 19px;
+            bottom: 21px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-bottom-right-radius: 15px;
+        }
+
+        &--bottom-left {
+            bottom: 26px;
+            left: 19px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-bottom-left-radius: 15px;
+        }
+    }
+
+    // Text column 515 and image 485 with an 89px gap (1089px of content on the 1206 card).
+    &__card-content {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 515fr) minmax(0, 485fr);
+        column-gap: 8.17%;
+        align-items: stretch;
+    }
+
+    // Figma: the text starts 10px below the image top; the button ends 10px above the image bottom.
+    &__card-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 0;
+    }
+
+    // Figma: Bagoss Medium 36, line 40, white.
+    &__card-title {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 36px;
+        font-weight: 500;
+        line-height: 40px;
+        color: #fff;
+    }
+
+    // Figma: Bagoss Regular 21, line 24, uppercase, #D0D0D0; 23px below the title.
+    &__card-subtitle {
+        margin: 23px 0 0;
+        font-family: var(--font-heading);
+        font-size: 21px;
+        font-weight: 400;
+        line-height: 24px;
+        text-transform: uppercase;
+        color: #d0d0d0;
+    }
+
+    // Figma: Poppins Regular 17, line 26, #A4A4A4, 504px wide; 39px below the subtitle.
+    &__card-description {
+        max-width: 504px;
+        margin: 39px 0 0;
+        font-family: var(--font-body);
+        font-size: 17px;
+        font-weight: 400;
+        line-height: 26px;
+        color: #a4a4a4;
+    }
+
+    // Figma "Button Rounded" (white, 150 × 46): aligned to the bottom of the text column.
+    &__card-action {
+        margin-top: auto;
+        padding-top: 24px;
+    }
+
+    // Figma "Rectangle 17": 485 × 458, 15px corners.
+    &__card-media {
+        align-self: start; // its height comes from the aspect ratio, never from a taller text column
+        overflow: hidden;
+        border-radius: 15px;
+        aspect-ratio: 485 / 458;
+        background-color: #121414;
+    }
+
+    &__card-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+@keyframes portfolio-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .portfolio[data-portfolio-state="pending"] .portfolio__reveal {
+        visibility: visible;
+        animation: none;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------------------------
+
+// Laptop: the card scales with the container; type steps down so the copy keeps the Figma proportions.
+@media (max-width: 1199.98px) {
+    .portfolio__card-inner {
+        padding-top: 64px;
+        padding-bottom: 68px;
+    }
+
+    .portfolio__card-title {
+        font-size: 30px;
+        line-height: 34px;
+    }
+
+    .portfolio__card-subtitle {
+        margin-top: 18px;
+        font-size: 18px;
+        line-height: 22px;
+    }
+
+    .portfolio__card-description {
+        margin-top: 24px;
+        font-size: 16px;
+        line-height: 25px;
+    }
+}
+
+// Tablet: no stacking (as in the reference); the cards follow each other.
+@media (max-width: 991.98px) {
+    .portfolio {
+        padding: 120px 0;
+    }
+
+    .portfolio__header {
+        margin-bottom: 64px;
+    }
+
+    .portfolio__eyebrow {
+        font-size: 20px;
+        line-height: 30px;
+    }
+
+    .portfolio__title {
+        margin-top: 14px;
+        font-size: 40px;
+        line-height: 46px;
+    }
+
+    .portfolio__stack {
+        gap: 24px;
+    }
+
+    .portfolio__card-inner {
+        padding: 64px 32px 64px 36px;
+    }
+
+    .portfolio__card-content {
+        column-gap: 32px;
+    }
+
+    .portfolio__card-title {
+        font-size: 26px;
+        line-height: 30px;
+    }
+
+    .portfolio__card-subtitle {
+        font-size: 16px;
+        line-height: 20px;
+    }
+
+    .portfolio__card-description {
+        font-size: 15px;
+        line-height: 24px;
+    }
+}
+
+// Phones: one column, image first.
+@media (max-width: 767.98px) {
+    .portfolio {
+        padding: 88px 0;
+    }
+
+    .portfolio__header {
+        margin-bottom: 48px;
+    }
+
+    .portfolio__eyebrow {
+        font-size: 18px;
+        line-height: 28px;
+    }
+
+    .portfolio__title {
+        margin-top: 10px;
+        font-size: 30px;
+        line-height: 36px;
+    }
+
+    .portfolio__card-inner {
+        padding: 72px 22px 64px;
+    }
+
+    .portfolio__card-content {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 28px;
+    }
+
+    .portfolio__card-media {
+        order: -1;
+    }
+
+    .portfolio__card-text {
+        padding: 0;
+    }
+
+    .portfolio__card-action {
+        padding-top: 28px;
+    }
+}

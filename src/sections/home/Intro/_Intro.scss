@@ -1,0 +1,370 @@
+// Home – Intro section (Figma "intro": 1206 × 597 frame at x 153 / y 1039 on the 1512 frame).
+// The SKYBRIDGE wordmark shown in this section is the Hero wordmark that travelled here on scroll;
+// the local copy ([data-wordmark-target]) only marks the landing slot and is shown when the travel is off.
+
+.intro {
+    position: relative;
+    z-index: 1; // below the Hero (z-index 2), so the travelling wordmark passes over this section
+    padding: 144px 0 119px; // Hero ends at 895 → frame at 1039; frame ends at 1636 → services at 1755
+    overflow-x: clip; // glows may bleed vertically into the next section, never horizontally
+    color: #fff;
+
+    // Pre-state: hidden until useIntroAnimation has applied its initial GSAP states.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-intro-state="pending"] .intro__reveal {
+        visibility: hidden;
+        animation: intro-failsafe 0s linear 3s forwards;
+    }
+
+    // Figma ellipses with blur 300, rendered as radial gradients (ellipse + 2 × 300) instead of a blur filter.
+    // Positions are relative to the page center (756px on the 1512 frame) and to the section top (y 895).
+    &__glows {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    &__glow {
+        position: absolute;
+        height: 1209px;
+        border-radius: 50%;
+
+        // Figma "Ellipse 3": 697 × 609 at x 286, y 1406, #2DD975 at 10%
+        &--green {
+            top: 211px;
+            left: calc(50% - 770px);
+            width: 1297px;
+            background: radial-gradient(
+                closest-side,
+                rgba(45, 217, 117, 0.085),
+                rgba(45, 217, 117, 0.07) 35%,
+                rgba(45, 217, 117, 0.04) 60%,
+                rgba(45, 217, 117, 0.015) 80%,
+                rgba(45, 217, 117, 0)
+            );
+        }
+
+        // Figma "Ellipse 2": 530 × 609 at x 1138, y 1446, #5B2EE0 at 35%
+        &--purple {
+            top: 251px;
+            left: calc(50% + 82px);
+            width: 1130px;
+            background: radial-gradient(
+                closest-side,
+                rgba(91, 46, 224, 0.3),
+                rgba(91, 46, 224, 0.245) 35%,
+                rgba(91, 46, 224, 0.14) 60%,
+                rgba(91, 46, 224, 0.05) 80%,
+                rgba(91, 46, 224, 0)
+            );
+        }
+    }
+
+    // Figma "intro" frame: 1206 × 597, centered (153px each side on 1512).
+    &__frame {
+        position: relative;
+        max-width: 1206px;
+        min-height: 597px;
+        margin: 0 auto;
+        padding: 85px 0 96px; // wordmark at y 85; button ends at 501 → 96px to the frame bottom
+    }
+
+    // Figma corner marks: 35 × 35, 1px white on two sides, 15px rounded outer corner.
+    &__corner {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        border: 0 solid #fff;
+        pointer-events: none;
+
+        // Figma: the left marks sit 15px (top) and 25px (bottom) inside the frame edge; the right ones on it.
+        &--top-left {
+            top: 15px;
+            left: 0;
+            border-top-width: 1px;
+            border-left-width: 1px;
+            border-top-left-radius: 15px;
+        }
+
+        &--top-right {
+            top: 0;
+            right: 0;
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-top-right-radius: 15px;
+        }
+
+        &--bottom-right {
+            right: 0;
+            bottom: 0;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-bottom-right-radius: 15px;
+        }
+
+        &--bottom-left {
+            bottom: 25px;
+            left: 0;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-bottom-left-radius: 15px;
+        }
+    }
+
+    // Figma "Group 6": 862px wide, centered.
+    &__content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 862px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    // Figma "logo-txt": 270 × 29, placed 20px right of the content center (x 316 in the 862px group).
+    // In a centered column, a left margin of 2 × 20px moves the box 20px to the right.
+    // Below desktop the offset scales with the wordmark (20 / 270 of its width).
+    &__wordmark {
+        --intro-wordmark-width: 270px;
+        width: var(--intro-wordmark-width);
+        margin-left: calc(var(--intro-wordmark-width) * 40 / 270);
+        aspect-ratio: 1256 / 135;
+    }
+
+    &__wordmark-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    // Figma: Bagoss Medium 48, line 54, -1%, white; line top at y 191 (77px below the wordmark).
+    &__title-wrap {
+        position: relative;
+        margin-top: 77px;
+    }
+
+    &__title,
+    &__title-outline {
+        display: block;
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        letter-spacing: -0.01em;
+    }
+
+    &__title {
+        color: #fff;
+    }
+
+    // Green contour copy of the heading (same box → same line breaks), only shown during its reveal.
+    &__title-outline {
+        position: absolute;
+        inset: 0;
+        color: transparent;
+        -webkit-text-stroke: 1px var(--primary);
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    // Figma: Poppins Regular 18, line 27, #A4A4A4, 794px box, 34px below the heading line.
+    &__text {
+        max-width: 794px;
+        margin: 34px 0 0;
+        font-family: var(--font-body);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 27px;
+        color: #a4a4a4;
+    }
+
+    // Figma: button at y 455 → 41px below the last text line.
+    &__action-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 41px;
+    }
+}
+
+// While the Hero wordmark travels, its landing slot stays hidden (class toggled by useHeroAnimation).
+// Declared in _Hero.scss as well: `:root.is-wordmark-travel [data-wordmark-target] { visibility: hidden }`.
+
+@keyframes intro-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro[data-intro-state="pending"] .intro__reveal {
+        visibility: visible;
+        animation: none;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------------------------
+
+// Laptop: glows follow the viewport proportionally (Figma centers at 41.96% and 92.79% of 1512).
+@media (max-width: 1399.98px) {
+    .intro__glow--green {
+        left: calc(41.96% - 648px);
+    }
+
+    .intro__glow--purple {
+        left: calc(92.79% - 565px);
+    }
+}
+
+// Tablet: the frame hugs its content; heading on two balanced lines.
+@media (max-width: 991.98px) {
+    .intro {
+        padding: 112px 0 96px;
+    }
+
+    .intro__frame {
+        min-height: 0;
+        padding: 72px 40px 80px;
+    }
+
+    .intro__corner {
+        width: 30px;
+        height: 30px;
+
+        &--top-left {
+            top: 13px; // Figma 15px, scaled with the mark (30 / 35)
+            border-top-left-radius: 13px;
+        }
+
+        &--top-right {
+            border-top-right-radius: 13px;
+        }
+
+        &--bottom-right {
+            border-bottom-right-radius: 13px;
+        }
+
+        &--bottom-left {
+            bottom: 21px; // Figma 25px, scaled with the mark (30 / 35)
+            border-bottom-left-radius: 13px;
+        }
+    }
+
+    .intro__wordmark {
+        --intro-wordmark-width: 240px;
+    }
+
+    .intro__title-wrap {
+        max-width: 560px;
+        margin-top: 56px;
+    }
+
+    .intro__title,
+    .intro__title-outline {
+        font-size: 44px;
+        line-height: 50px;
+        text-wrap: balance;
+    }
+
+    .intro__text {
+        margin-top: 28px;
+    }
+
+    .intro__action-wrap {
+        margin-top: 36px;
+    }
+
+    .intro__glow {
+        height: 930px;
+
+        &--green {
+            top: 260px;
+            left: calc(42% - 500px);
+            width: 1000px;
+        }
+
+        &--purple {
+            top: 300px;
+            left: calc(93% - 435px);
+            width: 870px;
+        }
+    }
+}
+
+// Mobile: tighter frame and type; corners scaled down with the frame.
+@media (max-width: 767.98px) {
+    .intro {
+        padding: 80px 0 72px;
+    }
+
+    .intro__frame {
+        padding: 56px 20px 64px;
+    }
+
+    .intro__corner {
+        width: 24px;
+        height: 24px;
+
+        &--top-left {
+            top: 10px; // Figma 15px, scaled with the mark (24 / 35)
+            border-top-left-radius: 10px;
+        }
+
+        &--top-right {
+            border-top-right-radius: 10px;
+        }
+
+        &--bottom-right {
+            border-bottom-right-radius: 10px;
+        }
+
+        &--bottom-left {
+            bottom: 17px; // Figma 25px, scaled with the mark (24 / 35)
+            border-bottom-left-radius: 10px;
+        }
+    }
+
+    .intro__wordmark {
+        --intro-wordmark-width: 200px;
+    }
+
+    .intro__title-wrap {
+        max-width: 100%;
+        margin-top: 40px;
+    }
+
+    .intro__title,
+    .intro__title-outline {
+        font-size: 30px;
+        line-height: 36px;
+    }
+
+    .intro__text {
+        margin-top: 20px;
+        font-size: 16px;
+        line-height: 26px;
+    }
+
+    .intro__action-wrap {
+        margin-top: 32px;
+    }
+
+    .intro__glow {
+        height: 640px;
+
+        &--green {
+            top: 320px;
+            left: calc(40% - 330px);
+            width: 660px;
+        }
+
+        &--purple {
+            top: 360px;
+            left: calc(95% - 290px);
+            width: 580px;
+        }
+    }
+}
