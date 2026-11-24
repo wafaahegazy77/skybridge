@@ -3,6 +3,7 @@ import Link from "next/link";
 import ArrowUpRightIcon from "@/components/icons/ArrowUpRightIcon";
 import type { HomeContact } from "@/types/home";
 import ContactCtaDetail from "./ContactCtaDetail";
+import ContactCtaMotion from "./ContactCtaMotion";
 import "./_ContactCta.scss";
 
 type ContactCtaProps = {
@@ -11,17 +12,22 @@ type ContactCtaProps = {
 
 const TITLE_ID = "contact-cta-title";
 
+// Without JavaScript the entrance never runs, so show everything immediately.
+const NO_SCRIPT_STYLES = `<style>.contact-cta[data-contact-state="pending"] .contact-cta__reveal{visibility:visible!important}</style>`;
+
 // Figma "fav-lg 4": the green Skybridge triangle (1228 × 1075, exported with its 80% opacity).
 const MARK = { src: "/images/fav-lg.png", width: 1228, height: 1075 };
 
-// Server Component (no client JavaScript): Figma "call action" card. The only interactions are the
-// hover / focus states of the round "Contact Us" button and of the phone and e-mail links (CSS).
+// Server Component: Figma "call action" card. ContactCtaMotion (client) adds the entrance, the depth
+// parallax of the glows and triangle, and the button's magnetic pull; hover states are CSS.
 export default function ContactCta({ data }: ContactCtaProps) {
     const { eyebrow, title, details, action } = data;
 
     return (
-        <section className="contact-cta" aria-labelledby={TITLE_ID}>
-            <div className="contact-cta__card">
+        <ContactCtaMotion labelledBy={TITLE_ID}>
+            <noscript dangerouslySetInnerHTML={{ __html: NO_SCRIPT_STYLES }} />
+
+            <div className="contact-cta__card contact-cta__reveal">
                 {/* Figma "Mask group": two blurred glows and the triangle, clipped to the card. */}
                 <div className="contact-cta__decor" aria-hidden="true">
                     <span className="contact-cta__glow contact-cta__glow--green" />
@@ -39,8 +45,8 @@ export default function ContactCta({ data }: ContactCtaProps) {
                 <div className="container">
                     <div className="contact-cta__inner">
                         <div className="contact-cta__content">
-                            <p className="contact-cta__eyebrow">{eyebrow}</p>
-                            <h2 id={TITLE_ID} className="contact-cta__title">
+                            <p className="contact-cta__eyebrow contact-cta__reveal">{eyebrow}</p>
+                            <h2 id={TITLE_ID} className="contact-cta__title contact-cta__reveal">
                                 {title}
                             </h2>
 
@@ -54,13 +60,15 @@ export default function ContactCta({ data }: ContactCtaProps) {
                         </div>
 
                         {/* Figma "Button": 220px white circle, arrow above the label. */}
-                        <Link href={action.href} className="contact-cta__button">
+                        {/* The ripple ring is decorative: it pulses out once when the button appears, and on hover. */}
+                        <Link href={action.href} className="contact-cta__button contact-cta__reveal">
+                            <span className="contact-cta__button-ripple" aria-hidden="true" />
                             <ArrowUpRightIcon className="contact-cta__button-icon" />
                             <span className="contact-cta__button-label">{action.label}</span>
                         </Link>
                     </div>
                 </div>
             </div>
-        </section>
+        </ContactCtaMotion>
     );
 }

@@ -17,9 +17,13 @@ export default function ContactCtaDetail({ detail }: ContactCtaDetailProps) {
     const Icon = ICONS[detail.icon];
 
     return (
-        <li className="contact-cta__item">
+        <li className="contact-cta__item contact-cta__reveal">
+            {/* The ring is drawn as an SVG circle so the entrance can trace it like a signal. */}
             <span className="contact-cta__icon" aria-hidden="true">
-                {Icon && <Icon />}
+                <svg className="contact-cta__ring" viewBox="0 0 45 45" focusable="false">
+                    <circle cx="22.5" cy="22.5" r="22" pathLength={1} />
+                </svg>
+                <span className="contact-cta__glyph">{Icon && <Icon />}</span>
             </span>
 
             <div className="contact-cta__item-text">

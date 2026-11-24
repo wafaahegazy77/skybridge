@@ -32,7 +32,8 @@ export default function BlogCard({ post }: BlogCardProps) {
             <h3 className="blogs__card-title">
                 {/* Not draggable: a native link drag would cancel the Swiper swipe started on the card. */}
                 <Link href={post.href} className="blogs__card-link" draggable={false}>
-                    {post.title}
+                    {/* Inline wrapper: carries the hover underline along every line of the title. */}
+                    <span className="blogs__card-title-text">{post.title}</span>
                 </Link>
             </h3>
             <p className="blogs__card-excerpt">{post.excerpt}</p>

@@ -1,0 +1,472 @@
+// About – Who we are (Figma About us → "about": 1463 × 1314 at y 696 on the 1512 frame).
+// Two staggered columns on the 1206 grid: left, the circle badge and (lower) two paragraphs; right
+// (618px in), the glass pill, the title and the intro. Below, the event photo in a frame with two
+// notched corners. A purple glow and a dark sphere sit at the right edge.
+// Vertical measures are from the Figma frame top (y 0 = the two corner marks).
+
+.who-we-are {
+    position: relative;
+    overflow-x: clip; // the sphere and the glow run past the right edge without causing scrolling
+    padding: 150px 0 228px; // the ticker ends at y 546 → frame at 696; the photo ends 228px above the cards
+    color: #fff;
+
+    // Entrance pre-state: hidden until useWhoWeAreAnimation has applied its initial GSAP states.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-who-state="pending"] .who-we-are__reveal {
+        visibility: hidden;
+        animation: who-we-are-failsafe 0s linear 3s forwards;
+    }
+
+    // Entrance only (useWhoWeAreAnimation). Each reveal is driven by one CSS variable: browsers shorten
+    // symmetric inset() values, which GSAP cannot interpolate reliably.
+    // - title lines are wiped in through a soft-edged mask (--wipe: 0% → 120%);
+    // - the photo rises into its frame (--media-reveal: top inset 100% → 0%);
+    // - the pill opens from its centre (--pill-open: side insets 50% → 0%).
+    &[data-who-state="armed"] {
+        .who-we-are__title-line {
+            -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--wipe, 120%) - 20%), transparent var(--wipe, 120%));
+            mask-image: linear-gradient(90deg, #000 calc(var(--wipe, 120%) - 20%), transparent var(--wipe, 120%));
+        }
+
+        .who-we-are__media {
+            clip-path: inset(var(--media-reveal, 0%) 0% 0% 0%);
+        }
+
+        .who-we-are__eyebrow {
+            clip-path: inset(0% var(--pill-open, 0%) round 40px);
+        }
+    }
+
+    // SplitText wrappers (entrance only: lines, their masks and the word boxes it measures with) keep
+    // the text's font; the global `*` font rule would switch them to the body font, which changes the
+    // measured line breaks.
+    &__title *,
+    &__text * {
+        font-family: inherit;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Decor (Figma "Ellipse 5" and "agency-benefits-bg-shape"), placed from the page centre.
+    // -----------------------------------------------------------------------------------------
+
+    &__decor {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    // The copy stays above the decor (the glow is drawn over the sphere, as in Figma, never over text).
+    > .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    // Figma "Ellipse 5": 484 × 910, #5B2EE0 at 35%, blur 300, centre 603px right of the page centre and
+    // 860px below the section top. Drawn as a radial gradient over the ellipse plus the blur reach.
+    // In Figma it lies over the sphere and tints it purple. The wrapper takes the scroll depth and the
+    // pointer; the light inside it breathes (useWhoWeAreAnimation).
+    &__glow {
+        position: absolute;
+        top: 105px;
+        left: calc(50% + 61px);
+        width: 1084px;
+        height: 1510px;
+    }
+
+    &__glow-light {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        will-change: transform, opacity;
+        background: radial-gradient(
+            closest-side,
+            rgba(91, 46, 224, 0.3),
+            rgba(91, 46, 224, 0.245) 35%,
+            rgba(91, 46, 224, 0.14) 60%,
+            rgba(91, 46, 224, 0.05) 80%,
+            rgba(91, 46, 224, 0)
+        );
+    }
+
+    // Figma: 315 × 323 at x 1298 / y 1122 on the frame (542px right of the page centre, 576px below the
+    // section top); it runs past the right edge of the page. Three nested layers, each moved by one
+    // source (useWhoWeAreAnimation): the box takes the entrance and the scroll depth, the "lean" layer
+    // the pointer, the image its idle float and sway.
+    &__sphere {
+        position: absolute;
+        top: 576px;
+        left: calc(50% + 542px);
+        width: 315px;
+        height: 323px;
+    }
+
+    &__sphere-lean {
+        width: 100%;
+        height: 100%;
+    }
+
+    &__sphere-img {
+        display: block;
+        will-change: transform;
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        user-select: none;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Layout
+    // -----------------------------------------------------------------------------------------
+
+    &__inner {
+        position: relative;
+        max-width: 1206px;
+        margin: 0 auto;
+        padding-top: 112px; // badge and pill 112px below the corner marks
+    }
+
+    // Figma "Group 5": 35 × 35 marks, 1px white strokes on two sides, 15px outer corner. The pair is
+    // drawn 3px left of the grid: the right mark ends 3px inside it, the left one starts 3px outside
+    // it and sits 15px lower.
+    &__corner {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        border: 0 solid #fff;
+
+        &--start {
+            top: 15px;
+            left: -3px;
+            border-top-width: 1px;
+            border-left-width: 1px;
+            border-top-left-radius: 15px;
+        }
+
+        &--end {
+            top: 0;
+            right: 3px;
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-top-right-radius: 15px;
+        }
+    }
+
+    // Right column 588px wide, 30px from the left one (starts 618px in). The left paragraphs start
+    // 50px below the end of the right column's first row (Figma y 485).
+    &__grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 588px);
+        grid-template-areas:
+            "badge content"
+            "story .";
+        column-gap: 30px;
+        align-items: start;
+    }
+
+    // ---------- Badge (Figma "Circle Badge") ----------
+    &__badge {
+        position: relative;
+        grid-area: badge;
+        width: 220px;
+        height: 220px;
+        margin-left: -2px; // Figma: 2px left of the grid
+        background-color: #222;
+        border: 1px solid #333;
+        border-radius: 50%;
+    }
+
+    &__badge-ring {
+        position: absolute;
+        inset: -1px; // drawn over the whole 220px circle (the border is inside it)
+        display: block;
+        width: calc(100% + 2px);
+        height: calc(100% + 2px);
+        overflow: visible;
+    }
+
+    // Figma: Inter Regular 14.5, white. Inter is not one of the project fonts: Poppins (body font).
+    &__badge-text {
+        font-family: var(--font-body);
+        font-size: 14.5px;
+        fill: #fff;
+    }
+
+    // Figma "logo 3": the triangle, 100 × 85, centred (61px / 67px from the badge corner).
+    &__badge-mark {
+        position: absolute;
+        top: 30.4545%;
+        left: 27.7273%;
+        width: 45.4545%;
+        height: auto;
+    }
+
+    // ---------- Right column ----------
+    &__content {
+        grid-area: content;
+    }
+
+    // Figma "Group 8": 200 × 50 glass pill, white 2%, 1px white 20% border, radius 40, background blur
+    // 15 (CSS 7.5px); a 10px #D9D9D9 dot 24px in, the text 31px after it; Bagoss Regular 16, uppercase.
+    &__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 31px;
+        height: 50px;
+        margin: 0;
+        padding: 0 36px 0 24px;
+        font-family: var(--font-heading);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 18px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 40px;
+        -webkit-backdrop-filter: blur(7.5px);
+        backdrop-filter: blur(7.5px);
+    }
+
+    &__eyebrow-dot {
+        flex: none;
+        width: 10px;
+        height: 9px;
+        margin-left: -1px; // the dot starts 24px from the pill's outer edge (the border is inside)
+        background-color: #d9d9d9;
+        border-radius: 50%;
+    }
+
+    // Figma: Bagoss Medium 48 / 54, white, 25px below the pill; two lines (the break is in the markup),
+    // the second one in Skybridge green (#2DD975).
+    &__title {
+        margin: 25px 0 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        white-space: pre-line;
+        color: #fff;
+    }
+
+    &__title-accent {
+        color: var(--primary);
+    }
+
+    // Figma: Poppins Regular 18 / 27; white, or #C5C5C5 for the grey paragraphs.
+    &__text {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 27px;
+        color: #fff;
+
+        &--muted {
+            color: #c5c5c5;
+        }
+
+        & + & {
+            margin-top: 25px;
+        }
+    }
+
+    &__intro {
+        margin-top: 37px;
+    }
+
+    // ---------- Left column, lower (Figma y 485: 12px in from the grid, 588px wide) ----------
+    // Figma places it 50px below the intro's text box, which is 5px shorter than its four lines: 45px.
+    &__story {
+        grid-area: story;
+        max-width: 600px;
+        margin: 45px -12px 0 0; // 12px into the 30px column gap, so the text keeps its 588px
+        padding-left: 12px;
+
+        .who-we-are__text + .who-we-are__text {
+            margin-top: 22px; // Figma: 25px below a text box 3px shorter than its lines
+        }
+    }
+
+    // ---------- Photo (Figma "Subtract": 1208 × 548, 2px left of the grid, 70px below the copy) ----------
+    // The frame is the Figma path (50px corners; a 319 × 102 notch at the bottom left and a 265 × 58
+    // notch at the top right, with rounded inner and outer corners), used as a mask scaled with the box.
+    &__media {
+        position: relative;
+        width: calc(100% + 2px);
+        margin: 70px 0 0 -2px;
+        aspect-ratio: 1208 / 548;
+    }
+
+    &__media-frame {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background-color: #242424;
+        $frame: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1208 548'%3E%3Cpath d='M943 29C943 45.02 955.98 58 972 58H1158C1185.61 58 1208 80.39 1208 108V498C1208 525.61 1185.61 548 1158 548H368.81C341.2 548 318.81 525.61 318.81 498V496C318.81 468.39 296.42 446 268.81 446H50C22.39 446 0 423.61 0 396V50C0 22.39 22.39 0 50 0H914C930.02 0 943 12.98 943 29Z'/%3E%3C/svg%3E";
+        -webkit-mask: url($frame) center / 100% 100% no-repeat;
+        mask: url($frame) center / 100% 100% no-repeat;
+    }
+
+    // 12% taller than the frame, centred: room for the scroll depth (useWhoWeAreAnimation).
+    &__media-depth {
+        position: absolute;
+        inset: -6% 0;
+    }
+
+    &__media-img {
+        object-fit: cover;
+    }
+}
+
+@keyframes who-we-are-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .who-we-are[data-who-state="pending"] .who-we-are__reveal {
+        visibility: visible;
+        animation: none;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive (no Figma: agreed adaptations)
+// ---------------------------------------------------------------------------------------------
+
+// Laptops: the sphere is smaller and kept clear of the copy.
+@media (max-width: 1399.98px) {
+    .who-we-are__sphere {
+        top: 640px;
+        left: calc(50% + 560px);
+        width: 240px;
+        height: 246px;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .who-we-are__grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .who-we-are__title {
+        font-size: 40px;
+        line-height: 46px;
+    }
+
+    .who-we-are__text {
+        font-size: 17px;
+        line-height: 26px;
+    }
+}
+
+// Tablets: one column (badge, title block, story).
+@media (max-width: 991.98px) {
+    .who-we-are {
+        padding: 120px 0 140px;
+    }
+
+    .who-we-are__inner {
+        padding-top: 80px;
+    }
+
+    .who-we-are__grid {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "badge"
+            "content"
+            "story";
+    }
+
+    .who-we-are__badge {
+        width: 180px;
+        height: 180px;
+        margin-left: 0;
+    }
+
+    .who-we-are__content {
+        max-width: 640px;
+        margin-top: 48px;
+    }
+
+    .who-we-are__title {
+        font-size: 36px;
+        line-height: 42px;
+    }
+
+    .who-we-are__intro {
+        margin-top: 24px;
+    }
+
+    .who-we-are__story {
+        max-width: 640px;
+        margin: 24px 0 0;
+        padding-left: 0;
+    }
+
+    .who-we-are__media {
+        width: 100%;
+        margin: 56px 0 0;
+    }
+
+    .who-we-are__sphere {
+        display: none;
+    }
+
+    .who-we-are__glow {
+        top: 200px;
+        left: calc(100% - 600px);
+        width: 900px;
+        height: 1200px;
+    }
+}
+
+// Phones.
+@media (max-width: 767.98px) {
+    .who-we-are {
+        padding: 88px 0 100px;
+    }
+
+    .who-we-are__inner {
+        padding-top: 64px;
+    }
+
+    .who-we-are__badge {
+        width: 150px;
+        height: 150px;
+    }
+
+    .who-we-are__content {
+        margin-top: 40px;
+    }
+
+    .who-we-are__eyebrow {
+        gap: 20px;
+        height: 44px;
+        padding: 0 24px 0 20px;
+        font-size: 14px;
+    }
+
+    .who-we-are__title {
+        margin-top: 20px;
+        font-size: 30px;
+        line-height: 36px;
+    }
+
+    .who-we-are__text {
+        font-size: 16px;
+        line-height: 26px;
+    }
+
+    .who-we-are__media {
+        margin-top: 40px;
+    }
+
+    .who-we-are__glow {
+        left: calc(100% - 420px);
+        width: 640px;
+        height: 900px;
+    }
+}

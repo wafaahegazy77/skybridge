@@ -1,0 +1,102 @@
+// About – green ticker band (Figma "Group 1000001770": 1512 × 67 on the bottom edge of the hero).
+// #2DD975 band; each phrase is a 29px #1A1A1A triangle pointing right, 21px before the text (Bagoss
+// Medium 24, line height auto 27, uppercase, #1A1A1A); phrases are 51px apart. Figma starts the band
+// 192px left of the frame, so the first phrase is partly off-screen: kept as the resting position.
+
+.about-ticker {
+    position: relative;
+    height: 67px;
+    overflow: hidden;
+    color: #1a1a1a;
+    background-color: var(--primary);
+
+    // Entrance pre-state: closed until useTickerAnimation takes over (it opens from the centre).
+    // Failsafe: if JavaScript never takes over, the band opens after 3s.
+    &[data-ticker-state="pending"] {
+        clip-path: inset(0% 50% 0% 50%);
+        animation: about-ticker-failsafe 0s linear 3s forwards;
+    }
+
+    // Entrance (useTickerAnimation): --ticker-open is the inset on each side, from 50% to 0%.
+    &[data-ticker-state="running"] {
+        clip-path: inset(0% var(--ticker-open, 0%));
+    }
+
+    &__track {
+        display: flex;
+        width: max-content;
+        height: 100%;
+        transform: translateX(-192px); // Figma resting position (the marquee starts from here)
+        will-change: transform;
+    }
+
+    // One phrase set; the right padding keeps the 51px gap between the last phrase and the next set.
+    &__group {
+        display: flex;
+        flex: none;
+        align-items: center;
+        gap: 51px;
+        margin: 0;
+        padding: 0 51px 0 0;
+        list-style: none;
+    }
+
+    &__item {
+        display: flex;
+        flex: none;
+        align-items: center;
+        gap: 21px;
+        font-family: var(--font-heading);
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 27px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    &__icon {
+        flex: none;
+        width: 29px;
+        height: 29px;
+        fill: currentColor;
+    }
+}
+
+@keyframes about-ticker-failsafe {
+    to {
+        clip-path: inset(0% 0% 0% 0%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-ticker[data-ticker-state="pending"] {
+        clip-path: none;
+        animation: none;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive (no Figma: agreed adaptations)
+// ---------------------------------------------------------------------------------------------
+
+@media (max-width: 767.98px) {
+    .about-ticker {
+        height: 52px;
+    }
+
+    .about-ticker__group {
+        gap: 36px;
+        padding-right: 36px;
+    }
+
+    .about-ticker__item {
+        gap: 14px;
+        font-size: 18px;
+        line-height: 20px;
+    }
+
+    .about-ticker__icon {
+        width: 22px;
+        height: 22px;
+    }
+}

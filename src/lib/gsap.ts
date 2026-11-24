@@ -1,9 +1,11 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
 
 // Single place where GSAP plugins are registered (client only).
+// SplitText ships with the installed gsap package (free since GSAP 3.13): no extra dependency.
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, SplitText);
 }
 
 export const fadeUpAll = (selector: string) => {
@@ -35,4 +37,4 @@ export const fadeUpAll = (selector: string) => {
   });
 };
 
-export { gsap, ScrollTrigger };
+export { gsap, ScrollTrigger, SplitText };

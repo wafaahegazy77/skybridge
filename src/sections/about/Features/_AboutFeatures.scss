@@ -1,0 +1,406 @@
+// About – the two glass cards under "Who we are" (Figma About us → "Group 1000001778" at y 2238 and
+// "Group 1000001779" at y 2747 on the 1512 frame, 1194 × 469 each, 40px apart).
+// Card: white 4%, 1px border (green on the first card, white 20% on the second), 30px corners,
+// background blur 10 (CSS 5px). Photo 393 × 400 with 20px corners, 35px from the top and 36px from its
+// side; the copy 74px from the photo, 649px wide. The cards sit 12px in from the left of the 1206 grid.
+
+.about-features {
+    position: relative;
+    overflow-x: clip; // the glow runs past the left edge without causing scrolling
+    padding: 0 0 228px; // "Who we are" ends 228px above the first card; "Who we serve" starts 228px below
+    color: #fff;
+
+    // Entrance pre-state: hidden until useFeaturesAnimation has applied its initial GSAP states.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-features-state="pending"] .about-features__reveal {
+        visibility: hidden;
+        animation: about-features-failsafe 0s linear 3s forwards;
+    }
+
+    // Figma "Ellipse 1": 530 × 609, #2DD975 at 20%, blur 300, centre 605px left of the page centre and
+    // 190px below the first card's top. Drawn as a radial gradient over the ellipse plus the blur reach.
+    // Behind everything on the page (z-index −1), as in Figma, so it never tints the photo above it.
+    &__glow {
+        position: absolute;
+        z-index: -1;
+        top: -415px;
+        left: calc(50% - 1170px);
+        width: 1130px;
+        height: 1209px;
+        border-radius: 50%;
+        pointer-events: none;
+        background: radial-gradient(
+            closest-side,
+            rgba(45, 217, 117, 0.17),
+            rgba(45, 217, 117, 0.14) 35%,
+            rgba(45, 217, 117, 0.08) 60%,
+            rgba(45, 217, 117, 0.03) 80%,
+            rgba(45, 217, 117, 0)
+        );
+    }
+
+    // The 1206 grid; the cards are 12px in from its left edge and flush with its right edge (1194px).
+    &__list {
+        display: grid;
+        gap: 40px;
+        max-width: 1206px;
+        margin: 0 auto;
+        padding-left: 12px;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Card
+// ---------------------------------------------------------------------------------------------
+
+.about-feature {
+    position: relative;
+    display: grid;
+    grid-template-columns: 393px minmax(0, 649px);
+    column-gap: 74px;
+    align-items: start;
+    min-height: 469px;
+    padding: 34px 41px 33px 35px; // Figma: photo 35px / 36px from the card's outer edge (1px border inside)
+    overflow: hidden; // the contour rings are clipped to the card
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    transition: border-color 0.4s ease;
+
+    // Figma: the first card has a #2DD975 border.
+    &--accent {
+        border-color: var(--primary);
+    }
+
+    // Second card: copy first (36px in), photo on the right (Figma x 759).
+    &--image-end {
+        grid-template-columns: minmax(0, 649px) 393px;
+
+        .about-feature__media {
+            order: 2;
+        }
+    }
+
+    // Entrance only (useFeaturesAnimation), each driven by one CSS variable:
+    // - the card opens from its middle (--card-open: top and bottom inset 50% → 0%);
+    // - the photo is uncovered from the card's outer edge (--media-open: 100% → 0%).
+    .about-features[data-features-state="armed"] & {
+        clip-path: inset(var(--card-open, 0%) 0% var(--card-open, 0%) 0% round 30px);
+
+        .about-feature__media {
+            clip-path: inset(0% var(--media-open, 0%) 0% 0% round 20px);
+        }
+
+        &.about-feature--image-end .about-feature__media {
+            clip-path: inset(0% 0% 0% var(--media-open, 0%) round 20px);
+        }
+
+        .about-feature__title-line {
+            -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--wipe, 120%) - 20%), transparent var(--wipe, 120%));
+            mask-image: linear-gradient(90deg, #000 calc(var(--wipe, 120%) - 20%), transparent var(--wipe, 120%));
+        }
+    }
+
+    // SplitText wrappers (entrance only) keep the text's font: the global `*` font rule would switch
+    // them to the body font, which changes the measured line breaks.
+    &__title *,
+    &__text * {
+        font-family: inherit;
+    }
+
+    // Figma "Frame": the contour rings, 339 × 343, 6px from the top and 5px from the right edge of the
+    // card (5px / 4px inside its 1px border).
+    &__decor {
+        position: absolute;
+        top: 5px;
+        right: 4px;
+        width: 339px;
+        height: 343px;
+        pointer-events: none;
+    }
+
+    &__contours {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    &__contour-group {
+        opacity: 0.4;
+        transition: opacity 0.5s ease;
+    }
+
+    &__media {
+        position: relative;
+        z-index: 1;
+        height: 400px;
+        overflow: hidden;
+        border-radius: 20px;
+    }
+
+    // 12% taller than the frame, centred: room for the scroll depth (useFeaturesAnimation).
+    &__media-depth {
+        position: absolute;
+        inset: -6% 0;
+    }
+
+    &__img {
+        object-fit: cover;
+        transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    &__body {
+        position: relative;
+        z-index: 1;
+        padding-top: 42px; // Figma: the copy starts 77px below the card top
+    }
+
+    &--image-end &__body {
+        padding-top: 70px; // Figma: 105px below the card top
+    }
+
+    // Figma: Bagoss Medium 32 / 36, uppercase, white.
+    &__title {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 32px;
+        font-weight: 500;
+        line-height: 36px;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    // Figma: Poppins Medium 18 / 27; white, #C5C5C5 (muted) or #2DD975 (accent).
+    // Every paragraph is a one-item Figma bulleted list: the text is indented 27px (1.5em) and a round
+    // bullet sits in the indent (see &::before). --feature-line is the line height, shared with the bullet.
+    &__text {
+        --feature-line: 27px;
+
+        position: relative;
+        margin: 29px 0 0; // second card: 29px below the title
+        padding-left: 1.5em; // Figma: 27px
+        font-family: var(--font-body);
+        font-size: 18px;
+        font-weight: 500;
+        line-height: var(--feature-line);
+        color: #fff;
+
+        // Figma: the list bullet, Poppins "•" (a 4.7px circle at 18px), 11.1px from the left edge, centred
+        // on the first line, in the colour of the item's first character (--feature-bullet).
+        // --bullet scales it (entrance only, useFeaturesAnimation).
+        &::before {
+            content: "";
+            position: absolute;
+            top: calc(var(--feature-line) / 2 - 0.131em + 0.3px);
+            left: 0.619em;
+            width: 0.262em;
+            height: 0.262em;
+            border-radius: 50%;
+            background-color: var(--feature-bullet, currentColor);
+            transform: scale(var(--bullet, 1));
+        }
+
+        & + & {
+            margin-top: 25px;
+        }
+
+        &--muted {
+            color: #c5c5c5;
+        }
+
+        &--accent {
+            color: var(--primary);
+        }
+
+        // The Figma line break is part of the copy ("\n").
+        &--lines {
+            white-space: pre-line;
+        }
+    }
+
+    // First card: three points, 38px below the title and 25px apart; the lead words in white.
+    // (Two classes: the global `body ul` reset would otherwise remove the margin.)
+    & &__points {
+        margin: 38px 0 0;
+        padding: 0;
+        list-style: none;
+
+        .about-feature__text {
+            --feature-bullet: #fff; // Figma: each point starts with its white lead words
+            margin: 0;
+        }
+
+        .about-feature__text + .about-feature__text {
+            margin-top: 25px;
+        }
+    }
+
+    &__lead {
+        color: #fff;
+    }
+
+    // Not defined in Figma: the card's border turns Skybridge green, the photo leans in slightly and the
+    // contour rings brighten.
+    @media (hover: hover) {
+        &:hover {
+            border-color: var(--primary);
+
+            .about-feature__img {
+                transform: scale(1.04);
+            }
+
+            .about-feature__contour-group {
+                opacity: 0.6;
+            }
+        }
+    }
+}
+
+@keyframes about-features-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-features[data-features-state="pending"] .about-features__reveal {
+        visibility: visible;
+        animation: none;
+    }
+
+    .about-feature,
+    .about-feature__img,
+    .about-feature__contour-group {
+        transition: none;
+    }
+
+    .about-feature:hover .about-feature__img {
+        transform: none;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive (no Figma: agreed adaptations)
+// ---------------------------------------------------------------------------------------------
+
+// Laptops: narrower photo and gap; smaller type.
+@media (max-width: 1199.98px) {
+    .about-feature {
+        grid-template-columns: 340px minmax(0, 1fr);
+        column-gap: 48px;
+        padding: 32px;
+
+        &--image-end {
+            grid-template-columns: minmax(0, 1fr) 340px;
+        }
+
+        &__media {
+            height: 380px;
+        }
+
+        &__body,
+        &--image-end .about-feature__body {
+            padding-top: 24px;
+        }
+
+        &__title {
+            font-size: 28px;
+            line-height: 32px;
+        }
+
+        &__text {
+            --feature-line: 26px;
+            font-size: 17px;
+        }
+    }
+}
+
+// Tablets and phones: one column, the photo on top (both cards).
+@media (max-width: 991.98px) {
+    .about-features {
+        padding-bottom: 140px;
+    }
+
+    .about-features__list {
+        gap: 32px;
+        padding-left: 0;
+    }
+
+    .about-feature {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 32px;
+        min-height: 0;
+        padding: 24px;
+
+        &--image-end {
+            grid-template-columns: minmax(0, 1fr);
+
+            .about-feature__media {
+                order: 0;
+            }
+        }
+
+        &__media {
+            height: auto;
+            aspect-ratio: 16 / 10;
+        }
+
+        &__body,
+        &--image-end .about-feature__body {
+            padding: 0 0 8px;
+        }
+    }
+}
+
+@media (max-width: 767.98px) {
+    .about-features {
+        padding-bottom: 100px;
+    }
+
+    .about-feature {
+        row-gap: 24px;
+        padding: 16px 16px 24px;
+        border-radius: 24px;
+
+        &__media {
+            aspect-ratio: 4 / 3;
+            border-radius: 16px;
+        }
+
+        &__body,
+        &--image-end .about-feature__body {
+            padding: 0 8px;
+        }
+
+        &__title {
+            font-size: 24px;
+            line-height: 30px;
+        }
+
+        &__text {
+            margin-top: 20px;
+            --feature-line: 25px;
+            font-size: 16px;
+
+            & + & {
+                margin-top: 18px;
+            }
+        }
+
+        & &__points {
+            margin-top: 24px;
+
+            .about-feature__text + .about-feature__text {
+                margin-top: 18px;
+            }
+        }
+
+        &__decor {
+            width: 240px;
+            height: 243px;
+        }
+    }
+}

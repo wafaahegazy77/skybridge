@@ -3,8 +3,39 @@
 // green triangle. Left: "Contact Us Today!", the title and the two contact rows; centre: the round
 // "Contact Us" button. All positions below are measured from the card (top) and the 1206 grid (left).
 
+// Hover nudge of the arrow, registered so it can transition (it is combined with the magnetic pull).
+@property --contact-cta-nudge {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+}
+
 .contact-cta {
     position: relative;
+
+    // Entrance pre-state: hidden until useContactCtaAnimation has applied its initial GSAP states.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-contact-state="pending"] .contact-cta__reveal {
+        visibility: hidden;
+        animation: contact-cta-failsafe 0s linear 3s forwards;
+    }
+
+    // Soft-edged wipe used by the entrance (eyebrow, title lines, contact details): --wipe is the
+    // position of the mask edge, animated from 0% to 120% by GSAP. Only applied while revealing.
+    &[data-contact-state="armed"] {
+        .contact-cta__eyebrow,
+        .contact-cta__title-line,
+        .contact-cta__item-text {
+            -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--wipe, 120%) - 20%), transparent var(--wipe, 120%));
+            mask-image: linear-gradient(90deg, #000 calc(var(--wipe, 120%) - 20%), transparent var(--wipe, 120%));
+        }
+    }
+
+    // SplitText lines of the title (entrance only): keep the heading font (the global `*` font rule
+    // would otherwise reset them to the body font).
+    &__title-line {
+        font-family: inherit;
+    }
 
     // Figma "Rectangle 15" (and its mask "Rectangle 16"): #1A1A1A, 30px corners, 596px high.
     &__card {
@@ -134,8 +165,9 @@
     }
 
     // Figma "Ellipse 2": white 4% fill, 1px inside stroke white 20%, background blur 20 (CSS 10px);
-    // white 1px-line icon centred.
+    // white 1px-line icon centred. The stroke is an SVG ring (traced during the entrance).
     &__icon {
+        position: relative;
         display: grid;
         place-items: center;
         width: 45px;
@@ -143,10 +175,39 @@
         margin-top: 7px;
         color: #fff;
         background-color: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 50%;
         -webkit-backdrop-filter: blur(10px);
         backdrop-filter: blur(10px);
+    }
+
+    // 1px ring on the inside of the circle, starting at the top (the entrance traces it clockwise).
+    &__ring {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        rotate: -90deg;
+        pointer-events: none;
+
+        circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 1;
+            transition: stroke 0.3s ease;
+        }
+    }
+
+    &__glyph {
+        display: grid;
+        place-items: center;
+    }
+
+    // Micro-interaction (not in Figma): pointing at a row lights its ring in Skybridge green.
+    @media (hover: hover) {
+        &__item:hover .contact-cta__ring circle {
+            stroke: var(--primary);
+        }
     }
 
     // Text box 230px wide (Figma: the address wraps after "Dubai,").
@@ -185,11 +246,21 @@
         white-space: nowrap;
     }
 
-    // Phone and e-mail links: same look as the text; the global link hover (Skybridge green) applies.
+    // Phone and e-mail links: same look as the text; the global link hover (Skybridge green) applies,
+    // and a 1px line draws in under the value from the left.
     &__link {
         color: inherit;
         text-decoration: none;
-        transition: color 0.25s ease;
+        background: linear-gradient(currentColor, currentColor) left bottom / 0% 1px no-repeat;
+        transition:
+            color 0.25s ease,
+            background-size 0.35s ease;
+
+        @media (hover: hover) {
+            &:hover {
+                background-size: 100% 1px;
+            }
+        }
 
         &:focus-visible {
             outline: 2px solid var(--primary);
@@ -201,6 +272,7 @@
     // Figma "Button": 220px white circle; 34 × 35 arrow (#1A1A1A) 82px from the top, the label 13px
     // below it (the pair sits 9px below the circle's centre).
     &__button {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -214,19 +286,33 @@
         text-decoration: none;
         background-color: #fff;
         border-radius: 50%;
+        // Magnetic pull (desktop): --magnet-x / --magnet-y are tweened by useContactCtaAnimation.
+        translate: var(--magnet-x, 0px) var(--magnet-y, 0px);
         transition:
             background-color 0.35s ease,
-            transform 0.35s ease;
+            scale 0.35s ease,
+            --contact-cta-nudge 0.35s ease;
 
-        // Not defined in Figma: the circle fills with Skybridge green and the arrow nudges toward its
-        // direction. The global `a:hover` colour (!important) is overridden so the label stays dark.
+        // The global `a:hover` colour (!important) is overridden so the label stays dark (all devices).
         &:hover {
             color: #1a1a1a !important;
-            background-color: var(--primary);
-            transform: scale(1.04);
+        }
 
-            .contact-cta__button-icon {
-                transform: translate(4px, -4px);
+        // Not defined in Figma (mouse and trackpad only, so a tap on a touch screen never leaves the
+        // button stuck in its hover look): the circle fills with Skybridge green, scales up a little,
+        // sends out one green ripple and the arrow nudges toward its direction. `scale` / `translate`
+        // (not `transform`) so they combine with the magnetic pull (CSS variables above).
+        @media (hover: hover) {
+            &:hover {
+                --contact-cta-nudge: 4px;
+
+                background-color: var(--primary);
+                scale: 1.04;
+
+                .contact-cta__button-ripple {
+                    border-color: var(--primary);
+                    animation: contact-cta-ripple 0.9s ease-out;
+                }
             }
         }
 
@@ -236,10 +322,22 @@
         }
     }
 
+    // One ring that pulses out from the circle (entrance: driven by GSAP; hover: CSS animation).
+    &__button-ripple {
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-radius: 50%;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    // The arrow leans further than the circle (0.6× the pull on top of it) and nudges up-right on hover.
     &__button-icon {
         width: 34px;
         height: 35px;
-        transition: transform 0.35s ease;
+        translate: calc(var(--magnet-x, 0px) * 0.6 + var(--contact-cta-nudge))
+            calc(var(--magnet-y, 0px) * 0.6 - var(--contact-cta-nudge));
     }
 
     // Figma: Bagoss Regular 17 / 26, uppercase, letter spacing 1%, #1A1A1A, centred.
@@ -253,18 +351,38 @@
     }
 }
 
+@keyframes contact-cta-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@keyframes contact-cta-ripple {
+    from {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(1.45);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .contact-cta__button,
-    .contact-cta__button-icon,
-    .contact-cta__link {
+    .contact-cta__link,
+    .contact-cta__ring circle {
         transition: none;
     }
 
     .contact-cta__button:hover {
-        transform: none;
+        --contact-cta-nudge: 0px;
 
-        .contact-cta__button-icon {
-            transform: none;
+        scale: none;
+
+        .contact-cta__button-ripple {
+            animation: none;
         }
     }
 }

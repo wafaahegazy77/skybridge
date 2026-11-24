@@ -1,0 +1,370 @@
+// About – Who we serve (Figma About us → "about": 1512 × 804 at y 3444 on the 1512 frame).
+// Eyebrow 140px from the panel top, title 10px below it; four 279 × 324 cards 32px apart (1212px in
+// total, centered), 113px below the title; the panel ends 143px below the cards.
+
+.who-we-serve {
+    position: relative;
+    padding: 140px 0 143px;
+    overflow-x: clip; // the lights never cause horizontal scrolling
+    color: #fff;
+
+    // Pre-state: hidden until useWhoWeServeAnimation has applied its initial GSAP states.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-serve-state="pending"] .who-we-serve__reveal {
+        visibility: hidden;
+        animation: who-we-serve-failsafe 0s linear 3s forwards;
+    }
+
+    // While GSAP drives the entrance, the hover transitions would lag behind its inline transforms.
+    &[data-serve-state="armed"] .who-we-serve__card {
+        transition: none;
+    }
+
+    // Figma: a full-width panel with 30px corners (same build as the Home Mission panel). Its 95% #1A1F1F
+    // fill matches the page background, so what shows of it is the smoke texture (5%) and the two lights
+    // clipped to its corners.
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        border-radius: 30px;
+        pointer-events: none;
+    }
+
+    // Figma "giphy-1" (Rectangle 19: 1509 × 795 at x 3, y 9, image fill "Fill") under the 95% fill → seen
+    // at 5%. The still frame shows first (and for reduced motion); the canvas plays the animation and
+    // takes over with a cross-fade once its first frame is drawn (data-smoke="on", useWhoWeServeAnimation).
+    &__texture,
+    &__smoke {
+        position: absolute;
+        top: 9px;
+        left: 3px;
+        width: calc(100% - 3px);
+        height: calc(100% - 9px);
+        border-radius: 30px;
+        transition: opacity 1.2s ease;
+    }
+
+    &__texture {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover; // Figma "Fill"
+        opacity: 0.05;
+    }
+
+    &__smoke {
+        display: block;
+        opacity: 0;
+    }
+
+    &[data-smoke="on"] &__texture {
+        opacity: 0;
+    }
+
+    &[data-smoke="on"] &__smoke {
+        opacity: 0.05;
+    }
+
+    // Figma ellipses with blur 300, rendered as radial gradients (ellipse + 2 × 300) instead of a blur
+    // filter (same technique as Mission). Colors include the 95% opacity of the mask they are clipped by.
+    &__glow {
+        position: absolute;
+        width: 1084px;
+        height: 1253px;
+        border-radius: 50%;
+        will-change: transform; // scroll-linked drift on its own layer
+
+        // Figma "Ellipse 4": 484 × 653 at x 0, y 151, #2DD975 at 40%
+        &--green {
+            top: -149px;
+            left: -300px;
+            background: radial-gradient(
+                closest-side,
+                rgba(45, 217, 117, 0.304),
+                rgba(45, 217, 117, 0.234) 35%,
+                rgba(45, 217, 117, 0.126) 60%,
+                rgba(45, 217, 117, 0.049) 80%,
+                rgba(45, 217, 117, 0)
+            );
+        }
+
+        // Figma "Ellipse 5": 484 × 653 at x 1028, y 0, #5B2EE0 at 35%
+        &--purple {
+            top: -300px;
+            right: -300px;
+            background: radial-gradient(
+                closest-side,
+                rgba(91, 46, 224, 0.268),
+                rgba(91, 46, 224, 0.205) 35%,
+                rgba(91, 46, 224, 0.11) 60%,
+                rgba(91, 46, 224, 0.041) 80%,
+                rgba(91, 46, 224, 0)
+            );
+        }
+    }
+
+    > .container {
+        position: relative; // above the backdrop
+    }
+
+    &__header {
+        text-align: center;
+    }
+
+    // SplitText wrappers (entrance only) keep the title's font: the global `*` font rule would switch
+    // them to the body font, which changes the measured line breaks.
+    &__title * {
+        font-family: inherit;
+    }
+
+    // Figma: Bagoss Regular 18, line height 20, #2DD975.
+    &__eyebrow {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 20px;
+        color: var(--primary);
+    }
+
+    // Figma: Bagoss Medium 48 / 54, uppercase, white, 10px below the eyebrow.
+    &__title {
+        margin: 10px 0 0;
+        font-family: var(--font-heading);
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 54px;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    // Four columns of 279px, 32px apart. (Two classes: the global `body ul` reset would otherwise win.)
+    & &__list {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 32px;
+        max-width: 1212px;
+        margin: 113px auto 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Card
+    // ---------------------------------------------------------------------------------------------
+
+    // Figma: 279 × 324, white 5%, 1px white 20% border, 30px corners, background blur 10 (CSS 5px).
+    // Icon 45px from the top, title 30px below it, text 19px below the title; 45px at the bottom.
+    &__card {
+        --light-x: 50%;
+        --light-y: 0%;
+
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 324px;
+        padding: 44px 30px; // + the 1px border = Figma's 45px / 31px
+        overflow: hidden; // the pointer light stays inside the corners
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 30px;
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+        transition:
+            border-color 0.35s ease,
+            background-color 0.35s ease,
+            transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    // Pointer light (not in Figma): a soft green light under the cursor, shown on hover only.
+    &__card-light {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(
+            220px circle at var(--light-x) var(--light-y),
+            rgba(45, 217, 117, 0.14),
+            rgba(45, 217, 117, 0) 70%
+        );
+        opacity: 0;
+        transition: opacity 0.35s ease;
+    }
+
+    &__icon {
+        position: relative;
+        display: block;
+        flex-shrink: 0;
+        overflow: visible; // the hover moves the shapes a little outside the 40 × 39 box
+    }
+
+    // Each shape moves around its own center on hover.
+    &__shape {
+        transform-box: fill-box;
+        transform-origin: center;
+        transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    // Figma: Bagoss Medium 22 / 25, white, 217px box (two lines).
+    &__card-title {
+        position: relative;
+        max-width: 217px;
+        margin: 30px 0 0;
+        font-family: var(--font-heading);
+        font-size: 22px;
+        font-weight: 500;
+        line-height: 25px;
+        color: #fff;
+    }
+
+    // Figma: Poppins Regular 16 / 24, #C5C5C5, 207px box.
+    &__card-text {
+        position: relative;
+        max-width: 207px;
+        margin: 19px 0 0;
+        font-family: var(--font-body);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+        color: #c5c5c5;
+    }
+
+    // Not defined in Figma: the card lifts, its border turns Skybridge green, the light follows the
+    // cursor, and the icon comes alive (the square turns, the triangle hops, the circle swells, the lines
+    // shift like a list being shuffled).
+    @media (hover: hover) {
+        &__card:hover {
+            border-color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.07);
+            transform: translateY(-8px);
+
+            .who-we-serve__card-light {
+                opacity: 1;
+            }
+
+            .who-we-serve__shape--square {
+                transform: rotate(90deg);
+            }
+
+            .who-we-serve__shape--triangle {
+                transform: translateY(-3px);
+            }
+
+            .who-we-serve__shape--circle {
+                transform: scale(1.15);
+            }
+
+            .who-we-serve__shape--line:nth-of-type(odd) {
+                transform: translateX(-3px);
+            }
+
+            .who-we-serve__shape--line:nth-of-type(even) {
+                transform: translateX(3px);
+            }
+        }
+    }
+}
+
+@keyframes who-we-serve-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .who-we-serve[data-serve-state="pending"] .who-we-serve__reveal {
+        visibility: visible;
+        animation: none;
+    }
+
+    .who-we-serve__card,
+    .who-we-serve__card-light,
+    .who-we-serve__shape {
+        transition: none;
+    }
+
+    .who-we-serve__card:hover,
+    .who-we-serve__card:hover .who-we-serve__shape {
+        transform: none;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive (no Figma: proposed adaptations)
+// ---------------------------------------------------------------------------------------------
+
+// Laptops and tablets: two columns of wider cards.
+@media (max-width: 1199.98px) {
+    .who-we-serve {
+        padding: 120px 0;
+
+        & &__list {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            max-width: 720px;
+            margin-top: 80px;
+        }
+
+        &__card {
+            min-height: 0;
+        }
+    }
+}
+
+@media (max-width: 991.98px) {
+    .who-we-serve {
+        padding: 100px 0;
+
+        &__title {
+            font-size: 40px;
+            line-height: 46px;
+        }
+
+        & &__list {
+            gap: 24px;
+            margin-top: 64px;
+        }
+    }
+}
+
+// Phones: one column; the panel corners follow the smaller cards.
+@media (max-width: 575.98px) {
+    .who-we-serve {
+        padding: 80px 0;
+
+        &__backdrop,
+        &__texture,
+        &__smoke {
+            border-radius: 24px;
+        }
+
+        &__eyebrow {
+            font-size: 16px;
+        }
+
+        &__title {
+            font-size: 32px;
+            line-height: 38px;
+        }
+
+        & &__list {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 20px;
+            max-width: 400px;
+            margin-top: 48px;
+        }
+
+        &__card {
+            padding: 36px 24px;
+            border-radius: 24px;
+        }
+
+        &__card-title {
+            margin-top: 24px;
+        }
+
+        &__card-text {
+            margin-top: 14px;
+        }
+    }
+}

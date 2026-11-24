@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, type RefObject } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { createHeroStencil } from "./heroStencil";
 
 // Runs before paint on the client; falls back to useEffect during SSR (where it never runs).
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -37,135 +38,108 @@ function getLayoutRect(element: HTMLElement) {
     return { left, top, width: element.offsetWidth, height: element.offsetHeight };
 }
 
+// ---------------------------------------------------------------------------------------------
+// Entrance: "Stencil and lighting gels"
+// ---------------------------------------------------------------------------------------------
+
 /**
- * "Contour" entrance (~1.5s). The headline is first drawn as a thin green contour — the same
- * language as the contour lines behind it — then the solid white type pours in from the top
- * and the contour dissolves. Everything else opens like an aperture from its own center:
- * the label pill, the buttons and the wordmark. Depth comes from layers settling from a
- * slightly larger scale. Only clip-path, transform, opacity and stroke offsets are animated.
+ * Entrance (~3.5s, the headline is final at ~2.2s). The headline is cut out of a matte sheet and lit
+ * from behind, like stage lighting (see heroStencil.ts for the layers):
+ * - the cut-out letters emerge as recessed shapes, the sheet casting a shadow into them;
+ * - a coloured gel slides in behind each line (green, then purple), light spilling around the letters;
+ * - a white plate rises behind the whole headline: the letters turn white;
+ * - the sheet settles flat (no more shadow), the real headline takes over at the exact same position
+ *   and the sheet fades away, revealing the Figma glows and lines;
+ * - the label, the buttons and the wordmark come in last.
+ * Only clip-paths, opacity, transforms and one small drop-shadow filter are animated; the stencil
+ * layers exist only during the entrance.
  */
 function playEntrance(root: HTMLElement, onComplete: () => void) {
     const q = gsap.utils.selector(root);
 
-    const glows = q(".hero__glows");
-    const linesField = q(".hero__lines");
-    const lines = q(".hero__line");
+    const title = root.querySelector<HTMLElement>(".hero__title");
     const eyebrow = q(".hero__eyebrow");
-    const eyebrowText = q(".hero__eyebrow-text");
-    const outline = q(".hero__title-outline");
-    const title = q(".hero__title");
-    const actions = q(".hero__action");
+    const actions = q(".hero__actions");
     const wordmarkMask = q(".hero__wordmark-mask");
-    const wordmarkImage = q(".hero__wordmark-img");
+
+    // The stencil is measured from the rendered headline, so it is only built while the Hero is at the
+    // top of the page (no scroll-linked transform on the content yet).
+    const stencil = title && root.getBoundingClientRect().top > -1 ? createHeroStencil(root, title) : null;
 
     // ---------- Initial states (applied before the section becomes visible) ----------
-    gsap.set(glows, { autoAlpha: 0, scale: 0.92, willChange: "opacity, transform" });
-    gsap.set(linesField, { scale: 1.04 });
-    gsap.set(lines, { strokeDasharray: 1, strokeDashoffset: 1 });
-    gsap.set(eyebrow, { clipPath: "inset(0% 50% 0% 50% round 40px)" });
-    gsap.set(eyebrowText, { clipPath: "inset(0% 50% 0% 50%)" });
-    gsap.set(outline, { clipPath: "inset(0% 50% 0% 50%)", scale: 1.03 });
-    gsap.set(title, { clipPath: "inset(0% 0% 100% 0%)" });
-    gsap.set(actions, { clipPath: "inset(0% 50% 0% 50% round 30px)" });
-    gsap.set(wordmarkMask, { clipPath: "inset(50% 0% 50% 0%)" });
-    gsap.set(wordmarkImage, { scale: 1.06 });
+    gsap.set(eyebrow, { autoAlpha: 0, y: 12 });
+    gsap.set(actions, { autoAlpha: 0, y: 20 });
+    gsap.set(wordmarkMask, { clipPath: "inset(100% 0% 0% 0%)", y: 30 });
+    if (title) gsap.set(title, { autoAlpha: 0 });
 
     root.dataset.heroState = "animating" satisfies HeroState;
 
     const tl = gsap.timeline({
-        defaults: { ease: "power3.inOut" },
         onComplete: () => {
-            gsap.set([...eyebrow, ...eyebrowText, ...title, ...actions, ...wordmarkMask], { clearProps: "clipPath" });
-            gsap.set([...outline, ...wordmarkImage], { clearProps: "all" });
-            gsap.set(lines, { clearProps: "strokeDasharray,strokeDashoffset" });
-            gsap.set(glows, { clearProps: "opacity,visibility,transform,willChange" });
-            gsap.set(linesField, { clearProps: "transform" });
-            onComplete(); // state "ready" hides the outline copy entirely
+            window.removeEventListener("resize", onResize);
+            stencil?.dispose();
+            gsap.set([...eyebrow, ...actions, ...wordmarkMask], { clearProps: "opacity,visibility,transform,clipPath" });
+            if (title) gsap.set(title, { clearProps: "opacity,visibility" });
+            onComplete();
         },
     });
 
-    // Atmosphere: glows rise, the contour field draws outward from its center line and settles back in depth.
-    tl.to(glows, { autoAlpha: 1, scale: 1, duration: 1.2, ease: "power2.out" }, 0);
-    tl.to(lines, { strokeDashoffset: 0, duration: 1.1, ease: "power2.out", stagger: { each: 0.008, from: "center" } }, 0);
-    tl.to(linesField, { scale: 1, duration: 1.4, ease: "power2.out" }, 0);
+    // Time at which the real headline takes over from the stencil.
+    let handoff = 0.4;
 
-    // Label: the pill opens from its center, its text follows a beat later.
-    tl.to(eyebrow, { clipPath: "inset(0% 0% 0% 0% round 40px)", duration: 0.55 }, 0.05);
-    tl.to(eyebrowText, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5 }, 0.15);
+    if (stencil && title) {
+        const { lightBox, gels, plate, sheet, spill, depth, applyDepth } = stencil;
 
-    // Headline: the green contour opens from the center and settles into place…
-    tl.to(outline, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6 }, 0.2);
-    tl.to(outline, { scale: 1, duration: 0.9, ease: "power2.out" }, 0.2);
-    // …then the solid type pours in from the top, and the contour dissolves underneath it.
-    tl.to(title, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.75, ease: "power2.inOut" }, 0.55);
-    tl.to(outline, { opacity: 0, duration: 0.35, ease: "power1.out" }, 1.1);
+        // The cut-outs emerge: the light box darkens behind the (still unlit) letters.
+        tl.fromTo(lightBox, { backgroundColor: "#1a1a1a" }, { backgroundColor: "#0c0c0c", duration: 0.35, ease: "power1.out" }, 0);
 
-    // Actions open from their centers.
-    tl.to(actions, { clipPath: "inset(0% 0% 0% 0% round 30px)", duration: 0.5, stagger: 0.08 }, 0.75);
+        // One gel per line, alternating sides, light spilling around the letters.
+        gels.forEach((gel, index) => {
+            const fromLeft = index % 2 === 0;
+            gsap.set(gel, { clipPath: fromLeft ? "inset(0% 100% 0% 0%)" : "inset(0% 0% 0% 100%)" });
+            tl.to(gel, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.55, ease: "expo.inOut" }, 0.4 + index * 0.22);
+        });
+        tl.to(spill, { opacity: 0.55, duration: 0.5, ease: "power1.out" }, 0.55);
 
-    // Wordmark: a horizontal aperture opens across it while it settles back in depth.
-    tl.to(wordmarkMask, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8 }, 0.7);
-    tl.to(wordmarkImage, { scale: 1, duration: 1, ease: "power2.out" }, 0.7);
-}
+        // The white plate rises behind the whole headline.
+        const plateAt = 0.4 + (gels.length - 1) * 0.22 + 0.63;
+        gsap.set(plate, { clipPath: "inset(100% 0% 0% 0%)" });
+        tl.to(plate, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "expo.inOut" }, plateAt);
+        tl.to(spill, { opacity: 0.18, duration: 0.5 }, plateAt + 0.1);
+        tl.to(spill, { opacity: 0, duration: 0.6 }, plateAt + 0.55);
 
-/**
- * Ambient life for the contour field. Only the "drift" layer (every other line) moves; the
- * "base" layer stays still, so neighbouring lines slowly slide past each other like a wave.
- * y, x and a hair of rotation run on separate sine cycles whose periods never line up, so
- * the motion never visibly repeats (rotation also makes the left and right ends move in
- * opposite directions, which reads as an undulation rather than a block sliding).
- *
- * Cost control:
- * - Transform-only on one composited layer: no repaint, no filters, no per-line DOM work.
- * - The motion is so slow (< 3px/s) that a step is ~0.1px at 20Hz, which is invisible, so the
- *   timeline is advanced at AMBIENT_FPS instead of every frame. The browser then composites
- *   a new frame only 20 times a second while idle, leaving the rest of the frames free.
- * - Starts only after the entrance, and stops whenever the Hero is off screen.
- * Returns start() for the entrance to hand over to, and dispose() for cleanup.
- */
-const AMBIENT_FPS = 20;
+        // The sheet settles flat: its shadow disappears.
+        tl.to(depth, { value: 0, duration: 0.7, ease: "power2.inOut", onUpdate: applyDepth }, plateAt + 0.35);
 
-function setupAmbient(root: HTMLElement) {
-    const layer = root.querySelector<SVGSVGElement>(".hero__lines-layer--drift");
-    if (!layer) return { start: () => {}, dispose: () => {} };
+        // Hand-over: the real headline (identical position) replaces the lit cut-outs, the sheet fades away.
+        handoff = plateAt + 0.95;
+        tl.set(title, { autoAlpha: 1 }, handoff);
+        tl.set(lightBox, { autoAlpha: 0 }, handoff + 0.01);
+        tl.to(sheet, { autoAlpha: 0, duration: 0.7, ease: "power1.inOut" }, handoff + 0.02);
+    } else if (title) {
+        // No stencil (page not at the top, or nothing measurable): a plain fade.
+        tl.to(title, { autoAlpha: 1, duration: 0.6, ease: "power1.out" }, 0);
+    }
 
-    const loop = { ease: "sine.inOut", yoyo: true, repeat: -1 } as const;
-    const motion = gsap.timeline({ paused: true });
-    motion.to(layer, { y: 12, duration: 6.5, ...loop }, 0); // 13s cycle
-    motion.to(layer, { x: 18, duration: 9.5, ...loop }, 0); // 19s cycle
-    motion.to(layer, { rotation: 0.35, transformOrigin: "50% 50%", duration: 14.5, ...loop }, 0); // 29s cycle
+    // Label, buttons and wordmark come in last.
+    tl.to(eyebrow, { autoAlpha: 1, y: 0, duration: 0.7, ease: "expo.out" }, handoff + 0.1);
+    tl.to(actions, { autoAlpha: 1, y: 0, duration: 0.8, ease: "expo.out" }, handoff + 0.25);
+    tl.to(wordmarkMask, { clipPath: "inset(0% 0% 0% 0%)", y: 0, duration: 1.1, ease: "expo.out" }, handoff + 0.37);
 
-    let started = false;
-    let visible = true;
-    let elapsed = 0;
-    let lastStep = 0;
-
-    const step = (time: number, deltaTime: number) => {
-        if (!started || !visible) return;
-        elapsed += Math.min(deltaTime, 100) / 1000; // ignore long gaps (background tab, resume)
-        if (time - lastStep < 1 / AMBIENT_FPS) return;
-        lastStep = time;
-        motion.totalTime(elapsed);
+    // If the headline moves during the entrance (real resize, not just a scrollbar appearing), the
+    // stencil would be misaligned: jump straight to the final state.
+    const measured = title?.getBoundingClientRect();
+    const onResize = () => {
+        const now = title?.getBoundingClientRect();
+        if (!measured || !now) return;
+        const moved = Math.abs(now.left - measured.left) > 1 || Math.abs(now.top - measured.top) > 1 || Math.abs(now.width - measured.width) > 1;
+        if (moved) tl.progress(1);
     };
+    window.addEventListener("resize", onResize);
 
-    gsap.ticker.add(step);
-
-    const trigger = ScrollTrigger.create({
-        trigger: root,
-        start: "top bottom",
-        end: "bottom top",
-        onToggle: (self) => (visible = self.isActive),
-        onRefresh: (self) => (visible = self.isActive),
-    });
-
-    return {
-        start: () => {
-            started = true;
-        },
-        dispose: () => {
-            gsap.ticker.remove(step);
-            trigger.kill();
-        },
+    return () => {
+        window.removeEventListener("resize", onResize);
+        stencil?.dispose();
     };
 }
 
@@ -254,21 +228,14 @@ export function useHeroAnimation(rootRef: RefObject<HTMLElement | null>) {
         waitForFonts().then(() => {
             if (cancelled) return;
 
-            ctx.add(() => {
-                const ambient = setupAmbient(root);
-                playEntrance(root, () => {
-                    setState("ready");
-                    ambient.start(); // the contour field starts breathing once the entrance has settled
-                });
-                return ambient.dispose; // called by ctx.revert()
-            });
+            ctx.add(() => playEntrance(root, () => setState("ready"))); // cleanup runs on ctx.revert()
             setupScroll(root, mm);
             ScrollTrigger.refresh();
         });
 
         return () => {
             cancelled = true;
-            ctx.revert(); // kills the entrance and the ambient (timeline, ticker listener, ScrollTrigger); restores inline styles
+            ctx.revert(); // kills the entrance, removes the stencil layers and restores inline styles
             mm.revert(); // kills the scroll-linked tweens and their ScrollTriggers
             document.documentElement.classList.remove(TRAVEL_CLASS);
         };

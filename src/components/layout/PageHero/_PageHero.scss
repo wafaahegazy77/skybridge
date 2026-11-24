@@ -1,0 +1,171 @@
+// Inner page header (Figma: About us → "hero", 1512 × 546). Desktop (≥ 1200px) matches Figma; the
+// smaller breakpoints below are agreed adaptations (Figma has desktop only).
+// Layers, bottom to top: the wave photo (image fill), a 90% dark gradient, one green glow, the title.
+// Optional children (About: the ticker band) sit on the bottom edge, inside the 546px.
+
+.page-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 546px;
+    overflow: hidden; // the glow and the photo are clipped to the hero (Figma mask)
+    color: #fff;
+
+    // Entrance pre-state: hidden until usePageHeroAnimation has applied its initial GSAP states.
+    // `visibility` keeps every element's box, so nothing shifts when it appears.
+    // Failsafe: if JavaScript never takes over, everything is revealed after 3s.
+    &[data-page-hero-state="pending"] .page-hero__reveal {
+        visibility: hidden;
+        animation: page-hero-failsafe 0s linear 3s forwards;
+    }
+
+    // ---------- Background ----------
+    &__bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    // Figma "Rectangle 161123888": image fill "hero-bg-scaled" (2560 × 1191), Fill = cover.
+    &__image {
+        position: absolute;
+        inset: 0;
+        background: url("/images/page-hero-bg.webp") center / cover no-repeat;
+    }
+
+    // Figma "Rectangle 161123889": linear gradient #282D2D → #1A1F1F at 90%, 133° (handles at 22.9% and
+    // 77.1% of the gradient line).
+    &__shade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(133deg, #282d2d 22.9%, #1a1f1f 77.1%);
+        opacity: 0.9;
+    }
+
+    // Figma "Ellipse 4": 530 × 609, #2DD975 at 30%, blur 300, at x 756 / y 110 (centre 265px right of the
+    // page centre, 414.5px from the top). Drawn as a radial gradient over the ellipse plus the blur reach
+    // (300px each side) instead of a costly blur filter.
+    &__glow {
+        position: absolute;
+        top: -190px;
+        left: calc(50% - 300px);
+        width: 1130px;
+        height: 1209px;
+        border-radius: 50%;
+        background: radial-gradient(
+            closest-side,
+            rgba(45, 217, 117, 0.255),
+            rgba(45, 217, 117, 0.21) 35%,
+            rgba(45, 217, 117, 0.12) 60%,
+            rgba(45, 217, 117, 0.045) 80%,
+            rgba(45, 217, 117, 0)
+        );
+    }
+
+    // ---------- Content ----------
+    &__content {
+        position: relative;
+        z-index: 1;
+        padding-top: 237px; // Figma: title box at y 237
+        text-align: center;
+    }
+
+    // Figma: Bagoss Medium 96, line height auto (108), white, centred.
+    &__title {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-size: 96px;
+        font-weight: 500;
+        line-height: 108px;
+        color: #fff;
+    }
+
+    &__bottom {
+        position: relative;
+        z-index: 1;
+        margin-top: auto;
+    }
+}
+
+@keyframes page-hero-failsafe {
+    to {
+        visibility: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-hero[data-page-hero-state="pending"] .page-hero__reveal {
+        visibility: visible;
+        animation: none;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Responsive (no Figma: agreed adaptations)
+// ---------------------------------------------------------------------------------------------
+
+// Laptops: the glow keeps its place relative to the width (centre at 67.5% as on the 1512 frame).
+@media (max-width: 1199.98px) {
+    .page-hero__glow {
+        left: calc(67.5% - 565px);
+    }
+
+    .page-hero__title {
+        font-size: 80px;
+        line-height: 90px;
+    }
+}
+
+// Tablets: the hero grows with its content.
+@media (max-width: 991.98px) {
+    .page-hero {
+        height: auto;
+        min-height: 440px;
+    }
+
+    .page-hero__content {
+        padding: 200px 0 120px;
+    }
+
+    .page-hero__title {
+        font-size: 64px;
+        line-height: 72px;
+    }
+
+    .page-hero__glow {
+        top: -240px;
+        left: calc(70% - 450px);
+        width: 900px;
+        height: 960px;
+    }
+}
+
+// Phones.
+@media (max-width: 767.98px) {
+    .page-hero {
+        min-height: 0;
+    }
+
+    .page-hero__content {
+        padding: 150px 0 88px;
+    }
+
+    .page-hero__title {
+        font-size: 48px;
+        line-height: 54px;
+    }
+
+    .page-hero__glow {
+        top: -260px;
+        left: calc(75% - 310px);
+        width: 620px;
+        height: 660px;
+    }
+}
+
+@media (max-width: 399.98px) {
+    .page-hero__title {
+        font-size: 42px;
+        line-height: 48px;
+    }
+}

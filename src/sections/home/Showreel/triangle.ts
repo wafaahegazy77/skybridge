@@ -3,7 +3,7 @@
 // through it, so the opening's geometry is part of the asset itself. Everything is stored as fractions of
 // the image size, measured from its alpha channel, so it holds for any export size of the same framing.
 export const SHOWREEL_TRIANGLE = {
-    src: "/images/showreel/showreel-triangle.png",
+    src: "/images/showreel/showreel-triangle2.png",
     width: 600,
     height: 600,
     /** Centre of the largest circle that fits inside the opening (the zoom's focal point). */

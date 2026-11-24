@@ -30,14 +30,15 @@ export default function Hero({ data }: HeroProps) {
                         <span className="hero__eyebrow-text">{eyebrow}</span>
                     </p>
 
-                    {/* The outline copy is decorative: drawn first during the entrance, then flooded by the solid title. */}
+                    {/* The pen is decorative: the point of light that writes the headline during the entrance. */}
                     <div className="hero__title-wrap">
-                        <span className="hero__title-outline" aria-hidden="true">
-                            {title}
-                        </span>
                         <h1 id={TITLE_ID} className="hero__title hero__reveal">
                             {title}
                         </h1>
+                        <span className="hero__pen" aria-hidden="true">
+                            <span className="hero__pen-halo" />
+                            <span className="hero__pen-core" />
+                        </span>
                     </div>
 
                     <div className="hero__actions hero__reveal">
@@ -74,4 +75,4 @@ export default function Hero({ data }: HeroProps) {
             </div>
         </HeroMotion>
     );
-}
+}

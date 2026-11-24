@@ -69,8 +69,7 @@
         }
     }
 
-    // Figma "header_shap 1": 1920 × 1062 at x -408, y -186.
-    // Two stacked <svg> layers of interleaved lines: a static base and a slowly drifting layer.
+    // Figma "header_shap 1": 1920 × 1062 at x -408, y -186. The lines stay still (static Figma composition).
     &__lines {
         position: absolute;
         top: -186px;
@@ -87,13 +86,45 @@
         height: 100%;
         max-width: none;
         overflow: visible;
+    }
 
-        // Only the drifting layer is composited, so the ambient motion never repaints the paths.
-        &--drift {
-            @media (prefers-reduced-motion: no-preference) {
-                will-change: transform;
-            }
-        }
+    // ---------- "Stencil and lighting gels" entrance (useHeroAnimation / heroStencil.ts) ----------
+    // Created by JavaScript for the entrance only, between the background and the content.
+    // Positions and sizes are set inline from the measured headline.
+    &__stencil {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    &__stencil-box,
+    &__stencil-sheet,
+    &__stencil-frame,
+    &__stencil-spill {
+        position: absolute;
+    }
+
+    // Light box behind the sheet: the gels and the white plate.
+    &__stencil-box {
+        overflow: hidden;
+        background-color: #0c0c0c;
+    }
+
+    &__stencil-gel,
+    &__stencil-plate {
+        position: absolute;
+    }
+
+    &__stencil-plate {
+        background-color: #fff;
+    }
+
+    // Light spilling through the cut-out letters onto the sheet.
+    &__stencil-spill {
+        opacity: 0;
+        filter: blur(26px);
+        mix-blend-mode: screen;
     }
 
     // ---------- Content ----------
@@ -137,15 +168,13 @@
     }
 
     // Figma: Bagoss Medium 90 / 98, -2%, white, 897px box at y 313.
-    // The wrapper holds the real heading and its decorative outline copy (same box → same line breaks).
     &__title-wrap {
         position: relative;
         max-width: 897px;
         margin: 8px 0 42px; // label ends at 305 → title 313; title ends at 509 → buttons 551
     }
 
-    &__title,
-    &__title-outline {
+    &__title {
         display: block;
         margin: 0;
         font-family: var(--font-heading);
@@ -157,20 +186,6 @@
 
     &__title {
         color: #fff;
-    }
-
-    // Green contour version of the heading, only visible during the entrance.
-    &__title-outline {
-        position: absolute;
-        inset: 0;
-        color: transparent;
-        -webkit-text-stroke: 1px var(--primary);
-        visibility: hidden;
-        pointer-events: none;
-    }
-
-    &[data-hero-state="animating"] &__title-outline {
-        visibility: visible;
     }
 
     // Figma: buttons 16px apart, centered.
@@ -256,8 +271,7 @@
         margin: 8px 0 36px;
     }
 
-    .hero__title,
-    .hero__title-outline {
+    .hero__title {
         font-size: 64px;
         line-height: 70px;
     }
@@ -311,8 +325,7 @@
         margin: 12px 0 32px;
     }
 
-    .hero__title,
-    .hero__title-outline {
+    .hero__title {
         font-size: 44px;
         line-height: 50px;
         text-wrap: balance;
@@ -346,8 +359,7 @@
 }
 
 @media (max-width: 399.98px) {
-    .hero__title,
-    .hero__title-outline {
+    .hero__title {
         font-size: 38px;
         line-height: 44px;
     }

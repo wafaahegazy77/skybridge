@@ -2,6 +2,8 @@
 // Shared by every page, so it lives with the other site-wide constants (like the Navbar links).
 // Hrefs are placeholders until the pages and the social accounts are confirmed.
 
+import { ROUTES } from "./routes";
+
 const PENDING = "#";
 
 export type FooterLink = {
@@ -24,7 +26,7 @@ export const FOOTER = {
     links: {
         title: "Top Links",
         items: [
-            { label: "About", href: PENDING },
+            { label: "About", href: ROUTES.about },
             { label: "Services", href: PENDING },
             { label: "Project", href: PENDING },
             { label: "News", href: PENDING },

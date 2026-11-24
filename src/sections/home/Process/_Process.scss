@@ -94,19 +94,38 @@
         margin-top: 151px;
     }
 
-    // Figma "fav-lg 3": the triangle, 90px right of the grid and 367px above the first card
-    // (exported with its Figma look: grey, 2%). Behind everything.
+    // Figma "fav-lg 3": 1000 × 876, 90px right of the grid's left edge and 367px above the first card
+    // (exported with its Figma look: grey, 2%). Behind the header and the cards.
+    // Sizes are fractions of the 1206px grid (the stage is as wide as the grid), so the mark keeps its
+    // Figma proportions and place on narrower grids: width 1000 / 1206, left 90 / 1206, and the 367px
+    // above the first card as a margin (vertical margins in % follow the width): 367 / 1206.
+    // The transform is left free for useProcessAnimation (it turns around the triangle's centre:
+    // 50% / 59% of the image).
     &__mark {
         position: absolute;
-        top: 30%;
-        left: 50%;
-        width: 60%;
+        top: 0;
+        left: 7.4627%;
+        width: 82.9187%;
         max-width: none;
         height: auto;
+        margin-top: -30.4312%;
         pointer-events: none;
         user-select: none;
-        object-fit: contain;
-        transform: translate(-50% , -50%);
+        transform-origin: 50% 59%;
+
+        // Entrance (useProcessAnimation): uncovered from the heart of the triangle outward.
+        &.is-revealing {
+            -webkit-mask-image: radial-gradient(
+                farthest-side at 50% 59%,
+                #000 calc(var(--mark-reveal, 130%) - 30%),
+                transparent var(--mark-reveal, 130%)
+            );
+            mask-image: radial-gradient(
+                farthest-side at 50% 59%,
+                #000 calc(var(--mark-reveal, 130%) - 30%),
+                transparent var(--mark-reveal, 130%)
+            );
+        }
     }
 
     // Static grid (pending / static): the Figma cards, two per row.
@@ -244,62 +263,90 @@
     }
 }
 
-// Desktop (992px+): two alternating columns in depth (Vine desktop).
-// Seen from 1000px away, toward a point 1098px below the first card's top: with that origin the card one
-// step behind (238px deeper) lands exactly on the Figma next card (x 674, 211px lower, 475 × 261).
-// The bottom padding keeps room for that peek.
-@media (min-width: 992px) {
-    .process[data-process-state="armed"] {
-        // 588px on the 1206 grid (48.76%), narrower with the grid on smaller laptops.
-        --process-card-w: min(588px, 48.76%);
+// Vine "/Create a unified ecosystem" stage (measured on the live site and in its code, 1512 × 860):
+// - The cards sit one behind the other, 15rem (240px) apart in depth, vertically centred, and are seen
+//   from the centre of the stage. Vine stacks two 24rem perspectives (the content and its 3D stage),
+//   which gives an effective 192px perspective: a card one step behind is drawn at 192 / (192 + 240)
+//   = 44% of its size (measured on Vine: 253 / 570), two steps at 29%, three at 21%.
+// - Desktop (768px+): the cards alternate between the left edge (0%) and 60% of the grid, as on Vine.
+// - Phones: every card on the left edge, full width (Vine's mobile variant).
+// Resting state: the Figma composition (useProcessAnimation places the second card at its Figma place,
+// 80.8% and 2px blurred, until the pin starts); the cards behind are hidden until then.
+.process[data-process-state="armed"] {
+    .process__list {
+        perspective: 192px;
+        perspective-origin: 50% 50%;
+    }
 
-        .process__list {
-            padding-bottom: 149px;
-            perspective: 1000px;
-            perspective-origin: 50% 1098px;
-        }
+    .process__card {
+        width: min(588px, 100%);
+        transform: translate3d(0, 0, calc(var(--process-index) * -240px));
 
-        .process__card {
-            width: var(--process-card-w);
-            // Resting state (before the first update): the Figma composition.
-            transform: translate3d(0, 0, calc(var(--process-index) * -238px));
-
-            &:nth-child(2) {
-                filter: blur(2px); // Figma layer blur 4
-            }
-
-            &:nth-child(n + 3) {
-                opacity: 0;
-            }
-        }
-
-        // Right column: the Figma next card is 690.9px from the grid's left edge once in focus (57.29%);
-        // never closer than 24px to the screen edge on narrower screens.
-        .process__card--right {
-            left: min(57.29%, calc(100% - var(--process-card-w) + (100vw - 100%) / 2 - 24px));
+        &:nth-child(n + 2) {
+            opacity: 0;
+            filter: blur(20px);
         }
     }
 }
 
-// Below 992px (Vine mobile variant): one card at a time, centered on its own middle; the next card waits
-// hidden behind it.
+// Desktop (768px+): the second card is part of the Figma composition, visible from the start with its
+// Figma layer blur (4 → CSS 2px). Its Figma place and size are set by useProcessAnimation.
+@media (min-width: 768px) {
+    .process[data-process-state="armed"] .process__card:nth-child(2) {
+        opacity: 1;
+        filter: blur(2px);
+    }
+}
+
+// Large screens: the Figma frame spacing (header 154px from the top, cards 151px below the 180px
+// header). Below the cards: Figma's 152px space. It also holds the second card's Figma place (211px
+// lower than the first card and 261px tall: it ends 149px below it), so the resting composition stays
+// inside the section, and once the sequence has played the last card is followed by 152px only.
+// The two spaces above the cards shrink only when the screen is too short to show the header and the
+// first card together while pinned (below about 835px of height).
+@media (min-width: 992px) {
+    .process[data-process-state="armed"] {
+        --process-space: clamp(24px, calc((100vh - 527px) / 2), 151px);
+        --process-space: clamp(24px, calc((100svh - 527px) / 2), 151px);
+
+        min-height: 0;
+        padding: calc(var(--process-space) + 3px) 0 152px;
+
+        .process__inner {
+            justify-content: flex-start;
+        }
+
+        .process__header {
+            margin-bottom: var(--process-space);
+            padding-top: 0;
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    // Right column: 60% of the grid (Vine: left 60%); never closer than 24px to the screen edge on
+    // narrower screens.
+    .process[data-process-state="armed"] .process__card--right {
+        left: min(60%, calc(100% - min(588px, 100%) + (100vw - 100%) / 2 - 24px));
+    }
+}
+
 @media (max-width: 991.98px) {
     .process[data-process-state="armed"] {
         padding: 16px 0;
+    }
+}
 
-        .process__list {
-            perspective: 1000px;
-            perspective-origin: 50% 50%;
-        }
+// Tablets (768–991px): the existing pinned layout, plus the room for the second card.
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .process[data-process-state="armed"] {
+        padding-bottom: calc(16px + 149px);
+    }
+}
 
-        .process__card {
-            width: min(588px, 100%);
-            transform: translate3d(0, 0, calc(var(--process-index) * -238px));
-
-            &:nth-child(n + 2) {
-                opacity: 0;
-            }
-        }
+@media (max-width: 767.98px) {
+    .process[data-process-state="armed"] .process__card:nth-child(n + 2) {
+        filter: blur(5px); // Vine mobile: 5px blur
     }
 }
 
@@ -365,19 +412,12 @@
     }
 }
 
-// Short laptop screens (e.g. 1366 × 768 minus the browser bars): tighter pinned stage.
+// Short laptop screens (e.g. 1366 × 768 minus the browser bars): smaller description while pinned
+// (the spaces around the header shrink on their own, see the large-screen armed rules).
 @media (min-width: 992px) and (max-height: 760px) {
-    .process[data-process-state="armed"] {
-        padding: 16px 0;
-
-        .process__header {
-            margin-bottom: 16px;
-        }
-
-        .process__description {
-            font-size: 20px;
-            line-height: 30px;
-        }
+    .process[data-process-state="armed"] .process__description {
+        font-size: 20px;
+        line-height: 30px;
     }
 }
 

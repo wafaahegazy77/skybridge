@@ -158,11 +158,15 @@
 
     // Figma "Rectangle 161123884": #242424 pill, 31px high, 13px side padding, 22px / 20px from the
     // image corner; Poppins Regular 14 / 24, white at 80%.
+    // Hover (Figma: first card): the pill fills with a violet gradient, #4B35CD → #6250EB, left to right.
+    // A gradient cannot be transitioned, so it sits on a layer under the text that fades in (::before).
     &__card-tag {
         position: absolute;
         top: 20px;
         left: 22px;
         z-index: 1;
+        isolation: isolate; // keeps the gradient layer behind the text, inside the pill
+        overflow: hidden;
         display: inline-flex;
         align-items: center;
         height: 31px;
@@ -174,6 +178,17 @@
         color: rgba(255, 255, 255, 0.8);
         background-color: #242424;
         border-radius: 100px;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background-image: linear-gradient(90deg, #4b35cd 0%, #6250eb 100%);
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
     }
 
     // Figma "Arrow": 41 × 38 pill, #111111, in the image notch (bottom-right corner); white 20px arrow.
@@ -215,8 +230,8 @@
             border-radius: 20px;
         }
 
-        // The global `a:hover` turns links green (!important); the card keeps its white title, its hover
-        // is carried by the photo and the arrow.
+        // The global `a:hover` turns links green (!important); the card keeps its white title (the card
+        // hover adds the underline, the tag gradient, the photo zoom and the green arrow).
         &:hover {
             color: #fff !important;
         }
@@ -231,6 +246,20 @@
         }
     }
 
+    // Hover underline (Figma: first card, the title's own text underline: white, from the Bagoss font
+    // metrics, 0.05em thick = 1.6px at 32px). Drawn as a background line so it can grow from the left;
+    // on an inline element it runs along every line of a wrapped title, line after line. Its height
+    // (0.244em above the bottom of the text box) puts it exactly where the font's own underline is drawn
+    // (checked against `text-underline-position: from-font`). Hidden by default (0% wide): the default
+    // card is unchanged.
+    &__card-title-text {
+        background-image: linear-gradient(currentColor, currentColor);
+        background-repeat: no-repeat;
+        background-position: 100% calc(100% - 0.244em);
+        background-size: 0% 0.05em;
+        transition: background-size 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
     // Figma: Poppins Regular 16 / 26, #A4A4A4, 7px below the title.
     &__card-excerpt {
         margin: 7px 0 0;
@@ -241,7 +270,8 @@
         color: #a4a4a4;
     }
 
-    // Hover: the photo scales up slightly, the arrow turns Skybridge green.
+    // Hover: the photo scales up slightly, the arrow turns Skybridge green, the tag fills with the Figma
+    // violet gradient and the title is underlined (drawn in from the left, retracting to the right).
     @media (hover: hover) {
         &__card:hover {
             .blogs__card-img {
@@ -251,11 +281,32 @@
             .blogs__card-arrow {
                 background-color: var(--primary);
             }
+
+            .blogs__card-tag::before {
+                opacity: 1;
+            }
+
+            .blogs__card-title-text {
+                background-position: 0 calc(100% - 0.244em);
+                background-size: 100% 0.05em;
+            }
         }
     }
 
-    &__card:focus-within .blogs__card-arrow {
-        background-color: var(--primary);
+    // Keyboard focus shows the same hover state.
+    &__card:focus-within {
+        .blogs__card-arrow {
+            background-color: var(--primary);
+        }
+
+        .blogs__card-tag::before {
+            opacity: 1;
+        }
+
+        .blogs__card-title-text {
+            background-position: 0 calc(100% - 0.244em);
+            background-size: 100% 0.05em;
+        }
     }
 
     // -----------------------------------------------------------------------------------------
@@ -363,6 +414,8 @@
 @media (prefers-reduced-motion: reduce) {
     .blogs__card-img,
     .blogs__card-arrow,
+    .blogs__card-tag::before,
+    .blogs__card-title-text,
     .blogs__nav,
     .blogs__dot {
         transition: none;

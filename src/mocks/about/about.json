@@ -1,0 +1,108 @@
+{
+    "seo": {
+        "title": "About Us",
+        "description": "Since 2015, Skybridge has been crafting experiences that linger: immersive worlds built with precision, passion, and purpose."
+    },
+    "hero": {
+        "title": "About Us"
+    },
+    "ticker": {
+        "items": [
+            "Business Events",
+            "Business Events",
+            "Business Events",
+            "100+ Press Features",
+            "Business Events Smart Solution"
+        ]
+    },
+    "whoWeAre": {
+        "eyebrow": "who We Are",
+        "title": "We don’t just build events",
+        "titleHighlight": "we engineer legacies.",
+        "intro": "Since 2015,\u00a0Skybridge\u00a0has been crafting experiences that linger; immersive worlds built with precision, passion, and purpose. From brand launches to cultural spectacles, our events aren’t just attended, they’re felt.",
+        "highlight": "We’re a global collective of\u00a0creative visionaries, production powerhouses, AV specialists, and design disruptors; united by a single obsession:\u00a0turning bold ambition into breathtaking reality.",
+        "description": "With headquarters in\u00a0Dubai\u00a0and activations across the Middle East, Europe, and Eastern Asia, Skybridge blends scale with soul, creative madness with military precision, and storytelling with strategy.",
+        "badge": {
+            "text": "Since 2015, Skybridge",
+            "image": {
+                "src": "/images/badge-mark.webp",
+                "width": 200,
+                "height": 170,
+                "alt": ""
+            }
+        },
+        "media": {
+            "src": "/images/who-we-are.webp",
+            "width": 2416,
+            "height": 1096,
+            "alt": "Illuminated stage letters and a fire performer at a Skybridge brand activation in Dubai"
+        }
+    },
+    "features": {
+        "promise": {
+            "title": "Our promise to you:",
+            "points": [
+                {
+                    "lead": "Global ambition, regional mastery",
+                    "text": "— Born in Dubai, made for the world. We bring international polish with local nuance."
+                },
+                {
+                    "lead": "End-to-end control",
+                    "text": "— Every pixel, every wire, every second — owned, refined, and executed in-house."
+                },
+                {
+                    "lead": "Flawless meets fearless",
+                    "text": "— Whether it's a government ceremony or a fashion-forward activation, we balance protocol with pulse.."
+                }
+            ],
+            "image": {
+                "src": "/images/services/1.png",
+                "width": 502,
+                "height": 755,
+                "alt": "Guest wearing headphones and dark sunglasses under red stage light"
+            }
+        },
+        "vision": {
+            "title": "When it’s never been done before— that’s where we come in.",
+            "highlight": "Got a vision that feels impossible? Perfect.",
+            "description": "And we do it with an elegance that never shows the effort.\nWhat we deliver is more than an event — it’s a defining moment.",
+            "closing": "We choreograph complexity",
+            "image": {
+                "src": "/images/services/3.png",
+                "width": 511,
+                "height": 747,
+                "alt": "Crowd with raised hands under purple concert lights"
+            }
+        }
+    },
+    "whoWeServe": {
+        "eyebrow": "How we elevate them",
+        "title": "Who we serve",
+        "items": [
+            {
+                "id": 1,
+                "icon": "events",
+                "title": "Corporate Government Events",
+                "text": "Strategic summits, national showcases, and VVIP experiences that move markets."
+            },
+            {
+                "id": 2,
+                "icon": "events",
+                "title": "Corporate Government Events",
+                "text": "Strategic summits, national showcases, and VVIP experiences that move markets."
+            },
+            {
+                "id": 3,
+                "icon": "events",
+                "title": "Corporate Government Events",
+                "text": "Strategic summits, national showcases, and VVIP experiences that move markets."
+            },
+            {
+                "id": 4,
+                "icon": "events",
+                "title": "Corporate Government Events",
+                "text": "Strategic summits, national showcases, and VVIP experiences that move markets."
+            }
+        ]
+    }
+}
